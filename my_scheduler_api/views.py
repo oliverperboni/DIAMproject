@@ -11,11 +11,11 @@ from rest_framework.decorators import *
 
 
 
-@api_view(['POST','GET'])
+
 def index(request):
     return JsonResponse("My API for DIAM",safe=False)
         
-@api_view(['POST','GET'])
+
 def employee(request):
     if request.method == "GET":
         employee=Employee.objects.all()
@@ -27,7 +27,6 @@ def employee(request):
             employee.save()
             return JsonResponse("Saved",safe=False)  
 
-@api_view(['POST','GET'])        
 def services(request):
     if request.method == "GET":
         Service=Servicos.objects.all()
@@ -39,7 +38,6 @@ def services(request):
             Service.save()
             return JsonResponse("Saved",safe=False)  
 
-@api_view(['PUT','GET',"DELETE"])  
 def employee_details(request, pk):
     try:
         employee = Employee.objects.get(pk=pk)
@@ -59,7 +57,6 @@ def employee_details(request, pk):
         employee.delete()
         return Response({"message": "Employee deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['POST','GET'])  
 def appointment(request):
     if request.method == "GET":
         appointment =Appointment.objects.all()
@@ -78,7 +75,6 @@ def appointment(request):
          # Handle other HTTP methods if necessary
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
-@api_view(['GET', 'PUT', 'DELETE'])
 def service_detail(request, pk):
     try:
         service = Servicos.objects.get(pk=pk)
@@ -100,7 +96,6 @@ def service_detail(request, pk):
         service.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['GET', 'PUT', 'DELETE'])
 def appointment_detail(request, pk):
     try:
         appointment = Appointment.objects.get(pk=pk)
@@ -123,7 +118,6 @@ def appointment_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'POST'])
 def client(request):
     if request.method == 'GET':
         clients = Client.objects.all()
@@ -138,7 +132,6 @@ def client(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
 def client_detail(request, pk):
     try:
         client = Client.objects.get(pk=pk)
@@ -161,7 +154,6 @@ def client_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
 def client_appointments(request, client_id):
     try:
         appointments = Appointment.objects.filter(client_id=client_id)
@@ -172,7 +164,6 @@ def client_appointments(request, client_id):
 
 
 
-@api_view(['GET', 'POST'])
 def company_list(request):
     if request.method == 'GET':
         companies = Company.objects.all()
@@ -186,7 +177,6 @@ def company_list(request):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
-@api_view(['GET', 'PUT', 'DELETE'])
 def company_detail(request, pk):
     try:
         company = Company.objects.get(pk=pk)
@@ -209,7 +199,6 @@ def company_detail(request, pk):
         return JsonResponse({'message': 'Company deleted successfully'}, status=204)
     
     
-@api_view(['GET'])
 def company_services(request, company_id):
     try:
         services = Servicos.objects.filter(company_id=company_id)
