@@ -9,13 +9,12 @@ from django.http import JsonResponse
 from rest_framework.decorators import *
 
 
-
-
-
 def index(request):
-    return JsonResponse("My API for DIAM",safe=False)
-        
+    return render(request, 'index.html')
 
+def register(request):
+    return render(request, 'register.html')
+        
 def employee(request):
     if request.method == "GET":
         employee=Employee.objects.all()

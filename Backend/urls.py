@@ -17,8 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from my_scheduler_api import views
+from django.views.generic import RedirectView
 
-urlpatterns = [path("my_scheduler_api/",views.index),
+urlpatterns = [
+    path('', views.index, name='index'),
+    path("my_scheduler_api/",views.index),
+    path('my_scheduler_api/register/', views.register, name='register'),
     path('admin/', admin.site.urls),
     path("my_scheduler_api/employees",views.employee),
     path("my_scheduler_api/services",views.services),
@@ -33,6 +37,4 @@ urlpatterns = [path("my_scheduler_api/",views.index),
     path('my_scheduler_api/companies/', views.company_list),
     path('my_scheduler_api/companies/<int:pk>', views.company_detail),
     path("my_scheduler_api/company/<int:company_id>/employees/", views.company_employees),
-
-    
 ]

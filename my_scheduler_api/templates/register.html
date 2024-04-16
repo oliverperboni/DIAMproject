@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!-- Coding by CodingNepal | www.codingnepalweb.com-->
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>Login and Registration Form in HTML & CSS | CodingLab</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Fontawesome CDN Link -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'votacao/csslogin.css' %}">
+</head>
+<body>
+  <div class="container">
+    <input type="checkbox" id="flip" {% if tab == 'register' %}checked{% endif %}>
+    <div class="cover" {% if tab == 'register' %}style="transform: rotateY(180deg);" {% endif %}>
+      <div class="front">
+        <img src="{% static 'votacao/images/frontImg.jpg' %}" alt="">
+        <div class="text">
+          <span class="text-1">Every new friend is a <br> new adventure</span>
+          <span class="text-2">Let's get connected</span>
+        </div>
+      </div>
+      <div class="back">
+        <!--<img class="backImg" src="images/backImg.jpg" alt="">-->
+        <div class="text">
+          <span class="text-1">Complete miles of journey <br> with one step</span>
+          <span class="text-2">Let's get started</span>
+        </div>
+      </div>
+    </div>
+    <div class="forms">
+      <div class="form-content">
+        <div class="login-form" {% if tab != 'register' %}style="display: block;"{% endif %}>
+          <div class="title">Login</div>
+          <form action="#">
+            <div class="input-boxes">
+              <div class="input-box">
+                <i class="fas fa-envelope"></i>
+                <input type="text" placeholder="Enter your email" required>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Enter your password" required>
+              </div>
+              <div class="button input-box">
+                <input type="submit" value="Submit">
+              </div>
+              <div class="text sign-up-text">Don't have an account? <a href="#" id="register-link">Sign up now</a></div>
+            </div>
+          </form>
+        </div>
+        <div class="signup-form" {% if tab == 'register' %}style="display: block;"{% endif %}>
+          <div class="title">Signup</div>
+          <form action="#">
+            <div class="input-boxes">
+              <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Enter your name" required>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-envelope"></i>
+                <input type="text" placeholder="Enter your email" required>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Enter your password" required>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-map-pin"></i>
+                <input type="text" placeholder="Enter your city" required>
+              </div>
+              <div class="button input-box">
+                <input type="submit" value="Submit">
+              </div>
+              <div class="text sign-up-text">Already have an account? <a href="#" id="login-link">Login now</a></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Função para alternar entre a aba de login e a aba de registro
+    function toggleForms() {
+      var flipCheckbox = document.getElementById('flip');
+      var cover = document.querySelector('.cover');
+
+      // Verifica se o checkbox está marcado
+      if (flipCheckbox.checked) {
+        // Desmarca o checkbox e gira a capa para mostrar a parte frontal
+        flipCheckbox.checked = false;
+        cover.style.transform = 'rotateY(0deg)';
+      } else {
+        // Marca o checkbox e gira a capa para mostrar a parte traseira
+        flipCheckbox.checked = true;
+        cover.style.transform = 'rotateY(180deg)';
+      }
+    }
+
+    // Adiciona evento de clique aos links de login e registro
+    document.getElementById('register-link').addEventListener('click', function(e) {
+      e.preventDefault(); // Evita o comportamento padrão do link
+      toggleForms(); // Chama a função para alternar entre as abas
+    });
+
+    document.getElementById('login-link').addEventListener('click', function(e) {
+      e.preventDefault(); // Evita o comportamento padrão do link
+      var flipCheckbox = document.getElementById('flip');
+      var cover = document.querySelector('.cover');
+
+      flipCheckbox.checked = false; // Desmarca o checkbox
+      cover.style.transform = 'rotateY(0deg)'; // Gira a capa para mostrar a parte frontal
+    });
+
+    // Verifica se o parâmetro 'tab' está presente na URL e abre a aba correspondente
+    window.onload = function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var tab = urlParams.get('tab');
+
+      if (tab === 'login') {
+        var flipCheckbox = document.getElementById('flip');
+        var cover = document.querySelector('.cover');
+
+        flipCheckbox.checked = false; // Desmarca o checkbox
+        cover.style.transform = 'rotateY(0deg)'; // Gira a capa para mostrar a parte frontal
+      } else if (tab === 'register') {
+        toggleForms(); // Chama a função para alternar para o formulário de registro
+      }
+    };
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Service Provider{% endblock %}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'votacao/style.css' %}"/>
+</head>
+<body>
+    <header>
+        <img class="header-logo" src="{% static 'votacao/images/banner.png' %}" alt="Banner">
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="{% url 'index' %}">Página Inicial</a></li>
+            <li><a href="{% url 'register' %}?tab=login">Login</a></li>
+            <li><a href="{% url 'register' %}?tab=register">Registro</a></li>
+            <li><a href="#">Perfil</a></li>
+            <li><a href="#">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        {% block conteudo %}{% endblock %}
+    </div>
+
+    <div class="opcoes">
+        {% block opcoes_e_controlos %}{% endblock %}
+    </div>
+</body>
+</html>
