@@ -22,7 +22,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('', views.index, name='index'),
     path("my_scheduler_api/",views.index),
-    path('my_scheduler_api/register/', views.register, name='register'),
+    path('my_scheduler_api/register/', views.register_or_login, name='register_or_login'),
     path('admin/', admin.site.urls),
     path("my_scheduler_api/employees",views.employee),
     path("my_scheduler_api/services",views.services),

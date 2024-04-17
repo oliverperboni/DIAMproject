@@ -15,9 +15,11 @@
     
     <nav>
         <ul>
-            <li><a href="{% url 'index' %}">Página Inicial</a></li>
-            <li><a href="{% url 'register' %}?tab=login">Login</a></li>
-            <li><a href="{% url 'register' %}?tab=register">Registro</a></li>
+            {% if request.user.is_authenticated %}
+                <li><a href="{% url 'register_or_login' %}">Página Inicial</a></li>
+            {% endif %}
+            <li><a href="{% url 'register_or_login' %}?tab=login">Login</a></li>
+            <li><a href="{% url 'register_or_login' %}?tab=register">Registro</a></li>
             <li><a href="#">Perfil</a></li>
             <li><a href="#">Logout</a></li>
         </ul>

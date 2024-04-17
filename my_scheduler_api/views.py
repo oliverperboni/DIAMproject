@@ -1,20 +1,53 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from Backend.auth_backends.custom_auth_backend import EmailAuthBackend
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from .models import Employee
 from .serializers import *
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import *
-
 
 def index(request):
     return render(request, 'index.html')
 
-def register(request):
-    return render(request, 'register.html')
-        
+def register_or_login(request):
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "register":
+            # Processamento dos dados do formulário de registro
+            username = request.POST["name"]
+            email = request.POST["email"]
+            password = request.POST["password"]
+            location = request.POST["location"]
+            phone = request.POST["phone"]
+
+            user = User.objects.create_user(username=username, email=email, password=password)
+            client = Client.objects.create(name=username, email=email, phone=phone, location=location)
+            client.save()
+            
+            # Autenticação e login do usuário após o registro
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return index(request)
+        elif action == "login":
+            request.session.flush()
+            email = request.POST['email']
+            password = request.POST['password']
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                login(request, user)
+                request.session['user_id'] = user.id 
+                return index(request)
+            else:
+                return HttpResponse("Invalid login credentials.")
+    else:
+        return render(request, "register.html")
+
 def employee(request):
     if request.method == "GET":
         employee=Employee.objects.all()

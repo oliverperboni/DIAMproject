@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Company(models.Model):
     name = models.CharField(max_length=100)
@@ -19,15 +19,19 @@ class Employee(models.Model):
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='employee')
+    image = models.ImageField(default="static/media/profile_default.png")
 
 
     def __str__(self):
         return f"Employee {self.id}: {self.name}"
     
 class Client(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    phone = models.CharField(max_length=15)
+    email = models.EmailField(max_length=100, unique=True)
+    phone = models.CharField(max_length=15, unique=True)
+    location = models.CharField(max_length=50)
+    image = models.ImageField(default="static/media/profile_default.png")
     
     def __str__(self):
         return f"client {self.id}: {self.name}"
