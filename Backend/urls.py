@@ -27,7 +27,7 @@ urlpatterns = [
     path("my_scheduler_api/employees",views.employee),
     path("my_scheduler_api/services",views.services),
     path("my_scheduler_api/company/<int:company_id>/services",views.company_services),
-    path("my_scheduler_api/appointment",views.appointment),
+    path("my_scheduler_api/appointment",views.appointment, name='appointment'),
     path("my_scheduler_api/employees/<int:pk>",views.employee_details),
     path('my_scheduler_api/services/<int:pk>', views.service_detail),
     path('my_scheduler_api/appointments/<int:pk>', views.appointment_detail),

@@ -1,3 +1,4 @@
+from venv import logger
 from django.shortcuts import redirect, render
 from Backend.auth_backends.custom_auth_backend import EmailAuthBackend
 from django.contrib.auth import authenticate, login, logout
@@ -35,16 +36,15 @@ def register_or_login(request):
             login(request, user)
             return index(request)
         elif action == "login":
-            request.session.flush()
-            email = request.POST['email']
+            username = request.POST['name']
             password = request.POST['password']
-            user = authenticate(request, email=email, password=password)
+            user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 request.session['user_id'] = user.id 
                 return index(request)
             else:
-                return HttpResponse("Invalid login credentials.")
+                return index(request)
     else:
         return render(request, "register.html")
 
@@ -90,22 +90,7 @@ def employee_details(request, pk):
         return Response({"message": "Employee deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 def appointment(request):
-    if request.method == "GET":
-        appointment =Appointment.objects.all()
-        serialize = AppointmentSerializer(appointment,many=True)
-        return JsonResponse(serialize.data,safe=False)
-    if request.method == "POST":
-        print("recebi o post")
-        appointment = AppointmentSerializer(data=request.data)
-        if appointment.is_valid() :
-            print("TESTE")
-            appointment.save()
-            appointment_data = {
-            'message': 'Appointment created successfully!'
-            }
-            return JsonResponse(appointment_data, status=201)
-         # Handle other HTTP methods if necessary
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    return render(request, 'appointment.html')
     
 def service_detail(request, pk):
     try:

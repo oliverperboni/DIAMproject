@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Service Provider{% endblock %}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'votacao/style.css' %}"/>
+</head>
+<body>
+    <div class="content">
+        {% block conteudo %}
+        {% if request.user.is_authenticated %}
+            <h2>OLAAAAAAAAA</h2>
+            {% endif %}
+        {% endblock %}
+    </div>
+
+    <div class="opcoes">
+        {% block opcoes_e_controlos %}{% endblock %}
+    </div>
+</body>
+</html>
