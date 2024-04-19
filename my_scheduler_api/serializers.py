@@ -7,7 +7,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = "__all__"
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Servicos
+        model = Services
         fields = "__all__"
 
 class AppointmentSerializer(serializers.ModelSerializer):

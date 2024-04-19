@@ -21,22 +21,21 @@ def register_or_login(request):
         action = request.POST.get("action")
         if action == "register":
             # Processamento dos dados do formulário de registro
-            username = request.POST["name"]
+            name=request.POST["name"]
+            username = request.POST["username"]
             email = request.POST["email"]
             password = request.POST["password"]
             location = request.POST["location"]
             phone = request.POST["phone"]
 
             user = User.objects.create_user(username=username, email=email, password=password)
-            client = Client.objects.create(name=username, email=email, phone=phone, location=location)
+            client = Client.objects.create(user=user, name=name, email=email, phone=phone, location=location)
             client.save()
-            
-            # Autenticação e login do usuário após o registro
             user = authenticate(username=username, password=password)
             login(request, user)
             return index(request)
         elif action == "login":
-            username = request.POST['name']
+            username = request.POST['username']
             password = request.POST['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
@@ -47,21 +46,54 @@ def register_or_login(request):
                 return index(request)
     else:
         return render(request, "register.html")
+    
 
-def employee(request):
+def logoutview(request):
     if request.method == "GET":
-        employee=Employee.objects.all()
-        serialize = EmployeeSerializer(employee,many=True)
-        return JsonResponse(serialize.data,safe=False)
-    if request.method == "POST":
-        employee = EmployeeSerializer(data=request.data)
-        if employee.is_valid() :
-            employee.save()
-            return JsonResponse("Saved",safe=False)  
+        request.session.flush()
+        logout(request)
+        return index(request)
+    
+def create_service(request):
+    if request.method == 'POST':
+        # Coletar os dados do POST
+        name = request.POST.get('name')
+        selected_times = request.POST.getlist('selectedTimes')
+        menu_items_text = request.POST.get('menuItems')
+        description = request.POST.get('serviceDescription')
+        icon = request.FILES.get('serviceIcon')
+        banner = request.FILES.get('serviceBanner')
+        
+        menu_items_list = menu_items_text.splitlines()
+        menu_items = [item.strip() for item in menu_items_list if item.strip()]
+        
+        # Salvar os dados no banco de dados
+        service = Services.objects.create(
+            name=name,
+            selected_times=selected_times,
+            menuItems=menu_items,
+            description=description,
+            icon=icon,
+            banner=banner,
+            client=request.user.client
+        )
+        service.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': True})
+
+def profile(request):
+    try:
+        client = Client.objects.get(user=request.user)
+    except Client.DoesNotExist:
+        client = None
+    context = {
+        'client': client
+    }
+    return render(request, "profile.html", context)
 
 def services(request):
     if request.method == "GET":
-        Service=Servicos.objects.all()
+        Service=Services.objects.all()
         serialize = ServiceSerializer(Service,many=True)
         return JsonResponse(serialize.data,safe=False)
     if request.method == "POST":
