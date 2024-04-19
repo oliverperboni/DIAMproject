@@ -130,10 +130,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 STATICFILES_DIRS = [
- '/exemplo/dir/static/',
- '/outroexemplo/outradir/static/',
-    'votacao/static/'
+    '/exemplo/dir/static/',
+    '/outroexemplo/outradir/static/',
+        'votacao/static/'
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -145,3 +146,6 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/my_scheduler_api/static/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'my_scheduler_api/static/media')

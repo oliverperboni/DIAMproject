@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from Backend.auth_backends.custom_auth_backend import EmailAuthBackend
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
@@ -12,6 +13,7 @@ from .models import Employee
 from .serializers import *
 from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import *
+from django.contrib.auth import update_session_auth_hash
 
 def index(request):
     return render(request, 'index.html')
@@ -52,7 +54,7 @@ def logoutview(request):
     if request.method == "GET":
         request.session.flush()
         logout(request)
-        return index(request)
+        return redirect('index')
     
 def create_service(request):
     if request.method == 'POST':
@@ -90,6 +92,60 @@ def profile(request):
         'client': client
     }
     return render(request, "profile.html", context)
+
+@login_required
+def update_client(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        location = request.POST['city']
+        
+        try:
+            client = Client.objects.get(user=request.user)
+            client.name = name
+            client.email = email
+            client.phone = phone
+            client.location = location
+            client.save()
+        except Client.DoesNotExist:
+            client = Client.objects.create(
+                user=request.user,
+                name=name,
+                email=email,
+                phone=phone,
+                location=location
+            )
+            
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        if current_password and new_password and confirm_password:
+            # Verificar se a senha atual está correta
+            if request.user.check_password(current_password):
+                # Verificar se a nova senha e a confirmação são iguais
+                if new_password == confirm_password:
+                    # Alterar a senha do usuário
+                    request.user.set_password(new_password)
+                    request.user.save()
+                    # Atualizar a sessão de autenticação do usuário
+                    update_session_auth_hash(request, request.user)
+        return render(request, 'index.html')  # Redirecionar para a página de perfil do usuário após o salvamento/atualização
+    else:
+        return render(request, 'index.html')  # Renderizar o formulário HTML para atualizar o cliente
+
+def fazer_upload(request):
+    if request.method == 'POST' and request.FILES['myfile']:
+        myfile = request.FILES['myfile']
+        fs = FileSystemStorage()
+        filename = fs.save(myfile.name, myfile)
+        uploaded_file_url = fs.url(filename)
+        if request.user.client:
+            request.user.client.image.name = filename  # Salva apenas o nome do arquivo, não o URL completo
+            request.user.client.save()
+        return render(request, 'index.html', {'uploaded_file_url': uploaded_file_url})
+    return render(request, 'index.html')
 
 def services(request):
     if request.method == "GET":
