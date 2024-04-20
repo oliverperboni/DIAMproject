@@ -1,5 +1,5 @@
 from venv import logger
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from Backend.auth_backends.custom_auth_backend import EmailAuthBackend
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
@@ -146,6 +146,39 @@ def fazer_upload(request):
             request.user.client.save()
         return render(request, 'index.html', {'uploaded_file_url': uploaded_file_url})
     return render(request, 'index.html')
+
+def adminpage(request):
+    servicos_pendentes = Services.objects.filter(is_approved=False)
+    return render(request, 'adminpage.html', {'servicos_pendentes': servicos_pendentes})
+
+def aprovar_servico(request, servico_id):
+    if request.method == 'POST':
+        servico = Services.objects.get(pk=servico_id)
+        servico.is_approved = True
+        servico.save()
+        return JsonResponse({'message': 'Serviço aprovado com sucesso!'})
+    else:
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
+    
+def rejeitar_servico(request, servico_id):
+    if request.method == 'POST':
+        servico = get_object_or_404(Services, pk=servico_id)
+        servico.delete()  # Excluir o serviço
+        return HttpResponse('Serviço rejeitado e excluído com sucesso!')
+    else:
+        return HttpResponse('Método não permitido', status=405)
+
+
+
+
+
+
+
+
+
+
+
+
 
 def services(request):
     if request.method == "GET":
