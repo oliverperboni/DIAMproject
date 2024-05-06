@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .models import Employee
 from .serializers import *
-from django.http import HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from rest_framework.decorators import *
 from django.contrib.auth import update_session_auth_hash
 
@@ -169,13 +169,29 @@ def rejeitar_servico(request, servico_id):
         return HttpResponse('Método não permitido', status=405)
 
 
-
-
-
-
-
-
-
+def appointment(request, servico_id):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            client = request.user.client
+            name = client.name
+            email = client.email
+            phone = client.phone
+        else:
+            client = None
+            name = request.POST.get('nome')
+            email = request.POST.get('email')
+            phone = request.POST.get('phone')
+        
+        service = get_object_or_404(Services, pk=servico_id)
+        date = request.POST.get('data')
+        time = request.POST.get('selected_times2')
+        menu_items = request.POST.get('menuItems2')
+        
+        appointment = Appointment.objects.create(client=client, service=service, date=date, time=time, menuItems=menu_items, name=name, email=email, phone=phone)
+        return JsonResponse({'message': 'Compromisso criado com sucesso!'})
+    else:
+        service = get_object_or_404(Services, pk=servico_id)
+        return render(request, 'appointment.html', {'servico': service})
 
 
 
@@ -210,8 +226,6 @@ def employee_details(request, pk):
         employee.delete()
         return Response({"message": "Employee deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
-def appointment(request):
-    return render(request, 'appointment.html')
     
 def service_detail(request, pk):
     try:

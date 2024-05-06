@@ -51,11 +51,14 @@ class Services(models.Model):
         return f"Service {self.id}: {self.name} - Client: {self.client.name}"
 
 class Appointment(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     service = models.ForeignKey(Services, on_delete=models.CASCADE)
     date = models.CharField(max_length=100)
     time = models.CharField(max_length=100)
+    menuItems = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
+    phone = models.CharField(max_length=15)
 
     def __str__(self):
         return f"Appointment {self.id} -  with {self.employee.name} for {self.service.name} on {self.date} at {self.time}"

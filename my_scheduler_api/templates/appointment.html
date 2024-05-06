@@ -1,24 +1,102 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Service Provider{% endblock %}</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'votacao/style.css' %}"/>
+    <title>Reserva de Serviço</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS do Bootstrap Datepicker -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <!-- Scripts do jQuery e do Bootstrap (necessários para o Bootstrap Datepicker) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    <style>
+        body {
+            background-color: #f2f2f2;
+        }
+        #content {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        #logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        #logo img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="content">
-        {% block conteudo %}
-        {% if request.user.is_authenticated %}
-            <h2>OLAAAAAAAAA</h2>
-            {% endif %}
-        {% endblock %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div id="content">
+                    <div class="mb-3 text-center">
+                        <div id="banner" class="container-fluid bg-primary py-5">
+                            {% if servico.icon %}
+                                <img src="{{ servico.banner.url }}" class="img-fluid" alt="Logo do serviço">
+                            {% else %}
+                                <p>Não há banner disponível para este serviço.</p>
+                            {% endif %}
+                        </div>
+                        <div id="logo" class="mx-auto mb-3">
+                            {% if servico.icon %}
+                                <img src="{{ servico.icon.url }}" class="img-fluid" alt="Logo do serviço">
+                            {% else %}
+                                <p>Não há ícone disponível para este serviço.</p>
+                            {% endif %}
+                        </div>
+                        <h2>Reserva de Serviço</h2>
+                    </div>
+                    <form id="submitServiceRegist" action="{% url 'appointment' servico_id=servico.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome" value="{{ request.user.client.name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="{{ request.user.client.email }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="number" class="form-control" id="phone" name="phone" placeholder="Telefone" value="{{ request.user.client.phone }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="selected_times2" name="selected_times2" placeholder="Horário" required>
+                                {% for time in servico.selected_times %}
+                                    <option value="{{ time }}">{{ time }}</option>
+                                {% endfor %}
+                            </select>    
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="menuItems2" name="menuItems2" required>
+                                {% for item in servico.menuItems %}
+                                    <option value="{{ item }}">{{ item }}</option>
+                                {% endfor %}
+                            </select>    
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control datepicker" id="data" name="data" placeholder="Selecionar Data" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="opcoes">
-        {% block opcoes_e_controlos %}{% endblock %}
-    </div>
+    <script>
+        $(document).ready(function(){
+            $('.datepicker').datepicker({
+                format: 'dd/mm/yyyy', // Formato da data
+                autoclose: true // Fecha o calendário ao selecionar uma data
+            });
+        });
+    </script>
 </body>
 </html>

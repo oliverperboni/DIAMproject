@@ -20,21 +20,24 @@ from my_scheduler_api import views
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path("my_scheduler_api/",views.index),
-    path('my_scheduler_api/register/', views.register_or_login, name='register_or_login'),
-    path('my_scheduler_api/profile/', views.profile, name='profile'),
+    path("my_scheduler_api/",views.index, name='index'),
+    path('my_scheduler_api/register', views.register_or_login, name='register_or_login'),
+    path('my_scheduler_api/profile', views.profile, name='profile'),
     path('my_scheduler_api/adminpage/', views.adminpage, name='adminpage'),
-    path("logoutview", views.logoutview, name='logoutview'),
-    path("fazer_upload", views.fazer_upload, name='fazer_upload'),
-    path('create_service', views.create_service, name='create_service'),
-    path('update_client', views.update_client, name='update_client'),
-    path('aprovar_servico/<int:servico_id>/', views.aprovar_servico, name='aprovar_servico'),
-    path('rejeitar_servico/<int:servico_id>/', views.rejeitar_servico, name='rejeitar_servico'),
+    path("my_scheduler_api/logoutview", views.logoutview, name='logoutview'),
+    path("my_scheduler_api/fazer_upload", views.fazer_upload, name='fazer_upload'),
+    path('my_scheduler_api/create_service', views.create_service, name='create_service'),
+    path('my_scheduler_api/update_client', views.update_client, name='update_client'),
+    path('my_scheduler_api/aprovar_servico/<int:servico_id>/', views.aprovar_servico, name='aprovar_servico'),
+    path('my_scheduler_api/rejeitar_servico/<int:servico_id>/', views.rejeitar_servico, name='rejeitar_servico'),
+
+    path("my_scheduler_api/appointment/<int:servico_id>/",views.appointment, name='appointment'),
+
+    
+    
     path('admin/', admin.site.urls),
     path("my_scheduler_api/services",views.services),
     path("my_scheduler_api/company/<int:company_id>/services",views.company_services),
-    path("my_scheduler_api/appointment",views.appointment, name='appointment'),
     path("my_scheduler_api/employees/<int:pk>",views.employee_details),
     path('my_scheduler_api/services/<int:pk>', views.service_detail),
     path('my_scheduler_api/appointments/<int:pk>', views.appointment_detail),
