@@ -14,8 +14,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'votacao/style.css' %}"/>
 </head>
 <body>
-    <header>
-        <img class="header-logo" src="{% static 'votacao/images/banner.png' %}" alt="Banner">
+    <header class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-8">
+                <h2>My Scheduler</h2>
+            </div>
+            <div class="col-4 text-end">
+                <img class="header-logo" src="{% static 'votacao/images/banner.png' %}" alt="Descrição da Imagem" class="img-fluid">
+            </div>
+        </div>
     </header>
     
     <nav>

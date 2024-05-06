@@ -4,22 +4,13 @@ body, h1, h2, h3, p, ul, li {
 }
 
 header {
-    background-color: #2cb5eb;
+    background-color: #7d2ae8;
     color: #fff;
-    float: none;
-    height: 4rem;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-header h1 {
-    text-align: left;
-    float: left;
+    align-items: center; /* Alinha itens verticalmente ao centro */
 }
 
 .header-logo {
-    max-width: 20%;
+    max-width: 30%;
     height: auto;
     float: left;
     margin: 10px;
@@ -60,6 +51,7 @@ li a {
 
 h2 {
     margin-top: 10px;
+    margin-bottom: 15px;
 }
 
 li a:hover {
