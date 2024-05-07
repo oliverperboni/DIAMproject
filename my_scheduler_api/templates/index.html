@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Service Provider{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'votacao/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'votacao/style.css' %}"/>
+    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'votacao/style.css' %}"/>
 </head>
-<body>
+<body class="bodyDiferent">
     <header class="container-fluid">
         <div class="row align-items-center">
             <div class="col-8">
@@ -41,9 +43,23 @@
         </ul>
     </nav>
 
-    <div class="content">
+    <div class="content mt-4 ml-4 mr-4 mb-4">
         {% block conteudo %}
-        <img src="{{ user.client.image }}" alt="Profile Image" style="max-width: 100%; max-height: 100%;">
+        <div class="row g-4" id="content-container">
+            {% for service in services %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="{% url 'serviceDetail' service.id %}" class="service-link">
+                <div class="card h-100">
+                    <img src="{% static 'votacao/images/frontImg.jpg' %}" class="card-img-top" alt="Icone de {{ service.name }}">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ service.name }}</h5>
+                      <p class="card-text">{{ service.description |truncatechars:150 }}</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+            {% endfor  %}
+        </div>
         {% endblock %}
     </div>
 

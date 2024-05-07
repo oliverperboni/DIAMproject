@@ -16,7 +16,8 @@ from rest_framework.decorators import *
 from django.contrib.auth import update_session_auth_hash
 
 def index(request):
-    return render(request, 'index.html')
+    services = Services.objects.all()
+    return render(request, 'index.html', {'services': services})
 
 def register_or_login(request):
     if request.method == "POST":
@@ -192,6 +193,11 @@ def appointment(request, servico_id):
     else:
         service = get_object_or_404(Services, pk=servico_id)
         return render(request, 'appointment.html', {'servico': service})
+    
+def serviceDetail(request, servico_id):
+    service = Services.objects.get(pk=servico_id)
+    return render(request, 'serviceDetail.html', {'servico': service})
+
 
 
 
@@ -225,28 +231,6 @@ def employee_details(request, pk):
     elif request.method == "DELETE":
         employee.delete()
         return Response({"message": "Employee deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
-    
-def service_detail(request, pk):
-    try:
-        service = Servicos.objects.get(pk=pk)
-    except Servicos.DoesNotExist:
-        return Response({"error": "Service does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = ServiceSerializer(service)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = ServiceSerializer(service, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        service.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 def appointment_detail(request, pk):
     try:

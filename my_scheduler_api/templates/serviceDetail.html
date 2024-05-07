@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Serviço</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'votacao/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    <style>
+        
+        #logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        #logo img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="bodyDiferent">
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div id="content">
+                    <div class="mb-3 text-center">
+                        <div id="banner" class="container-fluid bg-primary py-5">
+                            {% if servico.icon %}
+                                <img src="{{ servico.banner.url }}" class="img-fluid" alt="Logo do serviço">
+                            {% else %}
+                                <p>Não há banner disponível para este serviço.</p>
+                            {% endif %}
+                        </div>
+                        <div id="logo" class="mx-auto mb-3">
+                            {% if servico.icon %}
+                                <img src="{{ servico.icon.url }}" class="img-fluid" alt="Logo do serviço">
+                            {% else %}
+                                <p>Não há ícone disponível para este serviço.</p>
+                            {% endif %}
+                        </div>
+                        <h2>Detalhes do Serviço</h2>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label"><b>Nome do Serviço:</b></label>
+                        <span class="form-control" id="nome">{{ servico.name }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label"><b>Descrição do Serviço:</b></label>
+                        <div class="form-control" id="nome">{{ servico.description }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label"><b>Horários de Funcionamento:</b></label>
+                        <div class="form-control" id="selected_times">
+                            {% for time in servico.selected_times %}
+                                <div>{{ time }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label"><b>Produtos do Serviço:</b></label>
+                        <div class="form-control" id="menuItems">
+                            {% for item in servico.menuItems %}
+                                <div>{{ item }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-2 text-center">
+                        <a href="{% url 'appointment' servico.id %}" class="btn btn-primary">Deseja Agendar um Serviço?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

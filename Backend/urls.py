@@ -30,16 +30,14 @@ urlpatterns = [
     path('my_scheduler_api/update_client', views.update_client, name='update_client'),
     path('my_scheduler_api/aprovar_servico/<int:servico_id>/', views.aprovar_servico, name='aprovar_servico'),
     path('my_scheduler_api/rejeitar_servico/<int:servico_id>/', views.rejeitar_servico, name='rejeitar_servico'),
-
     path("my_scheduler_api/appointment/<int:servico_id>/",views.appointment, name='appointment'),
-
+    path("my_scheduler_api/serviceDetail/<int:servico_id>/",views.serviceDetail, name='serviceDetail'),
     
     
     path('admin/', admin.site.urls),
     path("my_scheduler_api/services",views.services),
     path("my_scheduler_api/company/<int:company_id>/services",views.company_services),
     path("my_scheduler_api/employees/<int:pk>",views.employee_details),
-    path('my_scheduler_api/services/<int:pk>', views.service_detail),
     path('my_scheduler_api/appointments/<int:pk>', views.appointment_detail),
     path('my_scheduler_api/clients', views.client),
     path('my_scheduler_api/clietns/<int:pk>', views.client_detail),
