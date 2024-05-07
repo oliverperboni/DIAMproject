@@ -1,4 +1,3 @@
-from venv import logger
 from django.shortcuts import get_object_or_404, redirect, render
 from Backend.auth_backends.custom_auth_backend import EmailAuthBackend
 from django.contrib.auth import authenticate, login, logout
@@ -9,9 +8,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
-from .models import Employee
 from .serializers import *
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import *
 from django.contrib.auth import update_session_auth_hash
 
@@ -66,6 +64,10 @@ def create_service(request):
         description = request.POST.get('serviceDescription')
         icon = request.FILES.get('serviceIcon')
         banner = request.FILES.get('serviceBanner')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+
+        location = f"{latitude},{longitude}"
         
         menu_items_list = menu_items_text.splitlines()
         menu_items = [item.strip() for item in menu_items_list if item.strip()]
@@ -78,6 +80,7 @@ def create_service(request):
             description=description,
             icon=icon,
             banner=banner,
+            address=location,
             client=request.user.client
         )
         service.save()
@@ -189,6 +192,7 @@ def appointment(request, servico_id):
         menu_items = request.POST.get('menuItems2')
         
         appointment = Appointment.objects.create(client=client, service=service, date=date, time=time, menuItems=menu_items, name=name, email=email, phone=phone)
+        appointment.save()
         return JsonResponse({'message': 'Compromisso criado com sucesso!'})
     else:
         service = get_object_or_404(Services, pk=servico_id)
@@ -196,159 +200,40 @@ def appointment(request, servico_id):
     
 def serviceDetail(request, servico_id):
     service = Services.objects.get(pk=servico_id)
-    return render(request, 'serviceDetail.html', {'servico': service})
+    reviews = service.review_set.all()
+    return render(request, 'serviceDetail.html', {'servico': service, 'reviews': reviews})
 
 
+def add_review(request, servico_id):
+    if request.method == 'POST':
+        # Verificar se o cliente está autenticado
+        if request.user.is_authenticated:
+            # Cliente está logado, obter informações do cliente
+            client = request.user.client  # Acessar o perfil do cliente associado ao usuário logado
 
+            rating = request.POST.get('rating')
+            description = request.POST.get('description')
+            service = get_object_or_404(Services, pk=servico_id)
+            
+            review = Review(client=client, service=service, description=description, stars=rating)
+            
+            # Salvar a revisão no banco de dados
+            review.save()
+            return JsonResponse({'message': 'Compromisso criado com sucesso!'})
 
-
-def services(request):
-    if request.method == "GET":
-        Service=Services.objects.all()
-        serialize = ServiceSerializer(Service,many=True)
-        return JsonResponse(serialize.data,safe=False)
-    if request.method == "POST":
-        Service = ServiceSerializer(data=request.data)
-        if Service.is_valid() :
-            Service.save()
-            return JsonResponse("Saved",safe=False)  
-
-def employee_details(request, pk):
-    try:
-        employee = Employee.objects.get(pk=pk)
-    except Employee.DoesNotExist:
-        return Response({"error": "Employee does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == "GET":
-        serialize = EmployeeSerializer(employee, many=False)
-        return Response(serialize.data)
-    elif request.method == "PUT":
-        serialize = EmployeeSerializer(employee, data=request.data)
-        if serialize.is_valid():
-            serialize.save()
-            return Response(serialize.data)
-        return Response(serialize.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == "DELETE":
-        employee.delete()
-        return Response({"message": "Employee deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
-def appointment_detail(request, pk):
-    try:
-        appointment = Appointment.objects.get(pk=pk)
-    except Appointment.DoesNotExist:
-        return Response({"error": "Appointment does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = AppointmentSerializer(appointment)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = AppointmentSerializer(appointment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        appointment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-def client(request):
-    if request.method == 'GET':
-        clients = Client.objects.all()
-        serializer = ClientSerializer(clients, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = ClientSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-def client_detail(request, pk):
-    try:
-        client = Client.objects.get(pk=pk)
-    except Client.DoesNotExist:
-        return Response({"error": "Client does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = ClientSerializer(client)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = ClientSerializer(client, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        client.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-def client_appointments(request, client_id):
-    try:
-        appointments = Appointment.objects.filter(client_id=client_id)
-        serializer = AppointmentSerializer1(appointments, many=True)
-        return Response(serializer.data)
-    except Appointment.DoesNotExist:
-        return Response({"error": "Client appointments not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-
-def company_list(request):
-    if request.method == 'GET':
-        companies = Company.objects.all()
-        serializer = CompanySerializer(companies, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        else:
+            # Se o cliente não estiver autenticado, retornar uma resposta de erro
+            return JsonResponse({'error': 'O cliente deve estar autenticado para adicionar uma revisão'}, status=401)
+    else:
+        # Se o método da solicitação não for POST, retornar uma resposta de erro
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
     
-    elif request.method == 'POST':
-        serializer = CompanySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+def like_review(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    review.like()  # Chama o método 'like' na revisão
+    return JsonResponse({'message': 'Like adicionado com sucesso!'})
 
-def company_detail(request, pk):
-    try:
-        company = Company.objects.get(pk=pk)
-    except Company.DoesNotExist:
-        return JsonResponse({'error': 'Company does not exist'}, status=404)
-
-    if request.method == 'GET':
-        serializer = CompanySerializer(company)
-        return JsonResponse(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = CompanySerializer(company, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        company.delete()
-        return JsonResponse({'message': 'Company deleted successfully'}, status=204)
-    
-    
-def company_services(request, company_id):
-    try:
-        services = Servicos.objects.filter(company_id=company_id)
-        serializer = ServiceSerializer(services, many=True)
-        return Response(serializer.data)
-    except Servicos.DoesNotExist:
-        return Response({"error": "Services for this company not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-@api_view(['GET'])
-def company_employees(request, company_id):
-    try:
-        employees = Employee.objects.filter(company_id=company_id)
-        serializer = EmployeeSerializer(employees, many=True)
-        return Response(serializer.data)
-    except Employee.DoesNotExist:
-        return Response({"error": "Employees for this company not found"}, status=status.HTTP_404_NOT_FOUND)
-
+def dislike_review(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    review.dislike()  # Chama o método 'dislike' na revisão
+    return JsonResponse({'message': 'Dislike adicionado com sucesso!'})

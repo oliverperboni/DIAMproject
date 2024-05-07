@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import ArrayField
+from django.db.models import Avg
 
 class Company(models.Model):
     name = models.CharField(max_length=100)
@@ -13,18 +13,6 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
-class Employee(models.Model):
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
-    workDays = models.JSONField() 
-    start_time = models.CharField(max_length=10)
-    end_time = models.CharField(max_length=10)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='employee')
-    image = models.ImageField(default="static/media/profile_default.png")
-
-
-    def __str__(self):
-        return f"Employee {self.id}: {self.name}"
     
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -36,20 +24,60 @@ class Client(models.Model):
     
     def __str__(self):
         return f"client {self.id}: {self.name}"
-
+    
 class Services(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     selected_times = models.JSONField()
     menuItems = models.JSONField() 
     description = models.TextField()
+    address = models.CharField(max_length=255)
     icon = models.ImageField(default="static/media/profile_default.png")
     banner = models.ImageField(default="static/media/profile_default.png")
     is_approved = models.BooleanField(default=False)
 
+    def calculate_average_rating(self):
+        # Obtém todas as revisões associadas a este serviço
+        reviews = Review.objects.filter(service=self)
+        
+        # Calcula a média das estrelas usando a função Avg do Django
+        average_rating = reviews.aggregate(Avg('stars'))['stars__avg']
+        
+        # Se não houver revisões ou a média for None, retorna 0
+        if average_rating is None:
+            return 0
+        else:
+            return round(average_rating, 1)
+        
+    def review_count(self):
+        # Filtra as avaliações pelo ID do serviço atual
+        reviews = Review.objects.filter(service=self)
+        # Conta o número de avaliações
+        count = reviews.count()
+        return count
+        
     def __str__(self):
         return f"Service {self.id}: {self.name} - Client: {self.client.name}"
 
+class Review(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    service = models.ForeignKey(Services, on_delete=models.CASCADE)
+    description = models.TextField()
+    stars = models.SmallIntegerField()
+    likes = models.BigIntegerField(default=0)
+    dislikes = models.BigIntegerField(default=0)
+
+    def like(self):
+        self.likes += 1
+        self.save(update_fields=['likes'])
+
+    def dislike(self):
+        self.dislikes += 1
+        self.save(update_fields=['dislikes'])
+
+    def __str__(self):
+        return f"Review {self.id}: {self.client.username} - {self.service.name}"
+    
 class Appointment(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     service = models.ForeignKey(Services, on_delete=models.CASCADE)
@@ -61,7 +89,7 @@ class Appointment(models.Model):
     phone = models.CharField(max_length=15)
 
     def __str__(self):
-        return f"Appointment {self.id} -  with {self.employee.name} for {self.service.name} on {self.date} at {self.time}"
+        return f"Appointment {self.id} -  with {self.client.name} for {self.service.name} on {self.date} at {self.time}"
     
-    
+
 
