@@ -38,11 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "my_scheduler_api",
-    "rest_framework",
+    'my_scheduler_api.apps.MySchedulerApiConfig',
+    'rest_framework',
     'corsheaders',
-    
-    
 ]
 
 MIDDLEWARE = [
@@ -132,9 +130,7 @@ STATIC_URL = '/static/'
 
 
 STATICFILES_DIRS = [
-    '/exemplo/dir/static/',
-    '/outroexemplo/outradir/static/',
-        'votacao/static/'
+    'my_scheduler_api/static/'
 ]
 
 AUTHENTICATION_BACKENDS = [

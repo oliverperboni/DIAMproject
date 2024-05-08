@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Service Provider{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'votacao/bootstrap.min.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'votacao/style.css' %}"/>
-    
-
+    <link rel="stylesheet" type="text/css" href="{% static 'my_scheduler_api/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'my_scheduler_api/style.css' %}"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
@@ -25,170 +24,182 @@
     </style>
 </head>
 <body class="bodyDiferent">
-    <header class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col-8">
-                <h2>My Scheduler</h2>
-            </div>
-            <div class="col-4 text-end">
-                <img class="header-logo" src="{% static 'votacao/images/banner.png' %}" alt="Descrição da Imagem" class="img-fluid">
-            </div>
+<header class="container-fluid">
+    <div class="d-flex flex-row justify-content-between align-items-center">
+        <div class="mr-left col-2">
+            <a class="link-light link-opacity-50-hover link-underline link-underline-opacity-0"
+               href="{% url 'my_scheduler_api:index' %}"><h2>marcar-já!</h2></a>
         </div>
-    </header>
-    
-    <nav>
-        <ul>
-            <li><a href="{% url 'index' %}">Página Inicial</a></li>
+        <div class="mr-right col-5">
             {% if not request.user.is_authenticated %}
-                <li><a href="{% url 'register_or_login' %}?tab=login">Login</a></li>
-                <li><a href="{% url 'register_or_login' %}?tab=register">Registro</a></li>
+                <a class="link-light link-opacity-50-hover link-underline link-underline-opacity-0"
+                   href="{% url 'my_scheduler_api:register_or_login' %}?tab=login"><h5 class="d-inline">Login</h5></a>
+                <h5 class="d-inline">&nbsp/&nbsp</h5>
+                <a class="link-light link-opacity-50-hover link-underline link-underline-opacity-0"
+                   href="{% url 'my_scheduler_api:register_or_login' %}?tab=register"><h5 class="d-inline">Registar</h5>
+                </a>
             {% endif %}
             {% if request.user.is_authenticated %}
-                <li><a href="#" data-bs-toggle="modal" data-bs-target="#createServiceModal">Criar Serviço</a></li>
-                <li><a href="{% url 'profile' %}">Perfil</a></li>
-                <li><a href="{% url 'adminpage' %}">Admin Page</a></li>
-                <li><a href="{% url 'logoutview' %}">Logout</a></li>
+                <a class="link-light link-opacity-50-hover link-underline link-underline-opacity-0" href="#" data-bs-toggle="modal" data-bs-target="#createServiceModal"><h5 class="d-inline">Novo Serviço</h5></a>
+                <h5 class="d-inline">&nbsp/&nbsp</h5>
+                <a class="link-light link-opacity-50-hover link-underline link-underline-opacity-0" href="{% url 'my_scheduler_api:profile' %}"><h5 class="d-inline">Perfil</h5></a>
+                <h5 class="d-inline">&nbsp/&nbsp</h5>
+                <a class="link-light link-opacity-50-hover link-underline link-underline-opacity-0" href="{% url 'my_scheduler_api:adminpage' %}"><h5 class="d-inline">Página-Admin</h5></a>
+                <h5 class="d-inline">&nbsp/&nbsp</h5>
+                <a class="link-light link-opacity-50-hover link-underline link-underline-opacity-0" href="{% url 'my_scheduler_api:logoutview' %}"><h5 class="d-inline">Logout</h5></a>
             {% endif %}
-        </ul>
-    </nav>
+        </div>
+    </div>
+</header>
 
-    <div class="content mt-4 ml-4 mr-4 mb-4">
-        {% block conteudo %}
+<nav>
+    <ul>
+
+    </ul>
+</nav>
+
+<div class="content mt-4 ml-4 mr-4 mb-4">
+    {% block conteudo %}
         <div class="row g-4" id="content-container">
             {% for service in services %}
                 {% if service.is_approved %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                    <a href="{% url 'serviceDetail' service.id %}" class="service-link">
-                        <div class="card h-100">
-                            <img src="{% static 'votacao/images/frontImg.jpg' %}" class="card-img-top" alt="Icone de {{ service.name }}">
-                            <div class="card-body">
-                                <!-- Título do serviço -->
-                                <h5 class="card-title">{{ service.name }}</h5>
-                                <!-- Descrição do serviço -->
-                                <p class="card-text">{{ service.description |truncatechars:150 }}</p>
-                            </div>
-                            <!-- Rodapé com a pontuação e o número de reviews -->
-                            <div class="card-footer d-flex justify-content-between">
-                                <!-- Alinha à esquerda -->
-                                <div class="left-content">
-                                    <p class="average-rating">{{ service.calculate_average_rating }} ☆</p>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                        <a href="{% url 'my_scheduler_api:serviceDetail' service.id %}" class="service-link">
+                            <div class="card h-100">
+                                <img src="{% static 'my_scheduler_api/images/frontImg.jpg' %}" class="card-img-top"
+                                     alt="Icone de {{ service.name }}">
+                                <div class="card-body">
+                                    <!-- Título do serviço -->
+                                    <h5 class="card-title">{{ service.name }}</h5>
+                                    <!-- Descrição do serviço -->
+                                    <p class="card-text">{{ service.description |truncatechars:150 }}</p>
                                 </div>
-                                <!-- Alinha à direita -->
-                                <div class="right-content">
-                                    <p class="review-count">{{ service.review_count }} Reviews</p>
+                                <!-- Rodapé com a pontuação e o número de reviews -->
+                                <div class="card-footer d-flex justify-content-between">
+                                    <!-- Alinha à esquerda -->
+                                    <div class="left-content">
+                                        <p class="average-rating">{{ service.calculate_average_rating }} ☆</p>
+                                    </div>
+                                    <!-- Alinha à direita -->
+                                    <div class="right-content">
+                                        <p class="review-count">{{ service.review_count }} Reviews</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>
-        {% endblock %}
-    </div>
+    {% endblock %}
+</div>
 
-    <div class="opcoes">
-        {% block opcoes_e_controlos %}{% endblock %}
-    </div>
+<div class="opcoes">
+    {% block opcoes_e_controlos %}{% endblock %}
+</div>
 
-    <div class="modal fade" id="createServiceModal" tabindex="-1" aria-labelledby="createServiceModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createServiceModalLabel">Criar Novo Serviço</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="createServiceForm" action="{% url 'create_service' %}" method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="serviceName" class="form-label">Nome do Serviço</label>
-                            <input type="text" class="form-control" id="serviceName" name="name" required>
+<div class="modal fade" id="createServiceModal" tabindex="-1" aria-labelledby="createServiceModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createServiceModalLabel">Criar Novo Serviço</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createServiceForm" action="{% url 'my_scheduler_api:create_service' %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="serviceName" class="form-label">Nome do Serviço</label>
+                        <input type="text" class="form-control" id="serviceName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="timeInterval" class="form-label">Intervalo de Tempo (minutos)</label>
+                        <input type="number" class="form-control" id="timeInterval" name="timeInterval" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Horários Disponíveis</label>
+                        <div id="timeOptions" style="height: 150px; overflow-y: auto;">
+                            <!-- Checkboxes serão preenchidos dinamicamente -->
                         </div>
-                        <div class="mb-3">
-                            <label for="timeInterval" class="form-label">Intervalo de Tempo (minutos)</label>
-                            <input type="number" class="form-control" id="timeInterval" name="timeInterval" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Horários Disponíveis</label>
-                            <div id="timeOptions" style="height: 150px; overflow-y: auto;">
-                                <!-- Checkboxes serão preenchidos dinamicamente -->
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="menuItems" class="form-label">Menu</label>
-                            <textarea class="form-control" id="menuItems" name="menuItems" rows="5" placeholder="Digite os itens do menu, um por linha"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="serviceDescription" class="form-label">Descrição do Serviço</label>
-                            <textarea class="form-control" id="serviceDescription" name="serviceDescription" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="serviceAddress" class="form-label">Morada do Serviço</label>
-                        </div>
-                        <input type="hidden" id="latitude" name="latitude">
-                        <input type="hidden" id="longitude" name="longitude">
-                        <div id="map"></div>
-                        <div class="mb-3">
-                            <label for="serviceIcon" class="form-label">Ícone do Serviço</label>
-                            <input type="file" class="form-control" id="serviceIcon" name="serviceIcon">
-                        </div>
-                        <div class="mb-3">
-                            <label for="serviceBanner" class="form-label">Banner do Serviço</label>
-                            <input type="file" class="form-control" id="serviceBanner" name="serviceBanner">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                            <button type="submit" class="btn btn-primary">Enviar Pedido</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="menuItems" class="form-label">Menu</label>
+                        <textarea class="form-control" id="menuItems" name="menuItems" rows="5"
+                                  placeholder="Digite os itens do menu, um por linha"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceDescription" class="form-label">Descrição do Serviço</label>
+                        <textarea class="form-control" id="serviceDescription" name="serviceDescription" rows="3"
+                                  required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceAddress" class="form-label">Morada do Serviço</label>
+                    </div>
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    <div id="map"></div>
+                    <div class="mb-3">
+                        <label for="serviceIcon" class="form-label">Ícone do Serviço</label>
+                        <input type="file" class="form-control" id="serviceIcon" name="serviceIcon">
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceBanner" class="form-label">Banner do Serviço</label>
+                        <input type="file" class="form-control" id="serviceBanner" name="serviceBanner">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Enviar Pedido</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    
-    <script>
-        function generateTimeOptions() {
-            const interval = parseInt(document.getElementById('timeInterval').value);
-            const timeOptions = document.getElementById('timeOptions');
-            timeOptions.innerHTML = '';
-        
-            const hours = 24;
-            const minutesInHour = 60;
-            const totalMinutes = hours * minutesInHour;
-        
-            for (let m = 0; m < totalMinutes; m += interval) {
-                const hour = Math.floor(m / minutesInHour);
-                const minute = m % minutesInHour;
-                const formattedHour = (hour < 10 ? '0' : '') + hour.toString();
-                const formattedMinute = (minute < 10 ? '0' : '') + minute.toString();
-                const time = `${formattedHour}:${formattedMinute}`;
-        
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = 'selectedTimes';
-                checkbox.value = time;
-                checkbox.id = `time_${formattedHour}_${formattedMinute}`;
-                checkbox.className = 'form-check-input';
-        
-                const label = document.createElement('label');
-                label.textContent = time;
-                label.htmlFor = `time_${formattedHour}_${formattedMinute}`;
-                label.className = 'form-check-label time-label'; 
-        
-                const div = document.createElement('div');
-                div.className = 'form-check';
-                div.appendChild(checkbox);
-                div.appendChild(label);
-        
-                timeOptions.appendChild(div);
-            }
+</div>
+
+<script>
+    function generateTimeOptions() {
+        const interval = parseInt(document.getElementById('timeInterval').value);
+        const timeOptions = document.getElementById('timeOptions');
+        timeOptions.innerHTML = '';
+
+        const hours = 24;
+        const minutesInHour = 60;
+        const totalMinutes = hours * minutesInHour;
+
+        for (let m = 0; m < totalMinutes; m += interval) {
+            const hour = Math.floor(m / minutesInHour);
+            const minute = m % minutesInHour;
+            const formattedHour = (hour < 10 ? '0' : '') + hour.toString();
+            const formattedMinute = (minute < 10 ? '0' : '') + minute.toString();
+            const time = `${formattedHour}:${formattedMinute}`;
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selectedTimes';
+            checkbox.value = time;
+            checkbox.id = `time_${formattedHour}_${formattedMinute}`;
+            checkbox.className = 'form-check-input';
+
+            const label = document.createElement('label');
+            label.textContent = time;
+            label.htmlFor = `time_${formattedHour}_${formattedMinute}`;
+            label.className = 'form-check-label time-label';
+
+            const div = document.createElement('div');
+            div.className = 'form-check';
+            div.appendChild(checkbox);
+            div.appendChild(label);
+
+            timeOptions.appendChild(div);
         }
-        window.addEventListener('load', generateTimeOptions);
+    }
+
+    window.addEventListener('load', generateTimeOptions);
     document.getElementById('timeInterval').addEventListener('change', generateTimeOptions);
 
-    $(document).ready(function() {
-        $("#createServiceForm").submit(function(e) {
+    $(document).ready(function () {
+        $("#createServiceForm").submit(function (e) {
             e.preventDefault();
             swal({
                 title: "Tem certeza?",
@@ -197,40 +208,40 @@
                 buttons: ["Cancelar", "Sim"],
                 dangerMode: true,
             })
-            .then((willCreate) => {
-                if (willCreate) {
-                    var form = $(this);
-                    // Certifique-se de que os campos de entrada de latitude e longitude sejam preenchidos antes de enviar o formulário
-                    $("#latitude").val(marker.getPosition().lat());
-                    $("#longitude").val(marker.getPosition().lng());
-                    $.ajax({
-                        type: form.attr('method'),
-                        url: form.attr('action'),
-                        data: form.serialize(),
-                        success: function(data) {
-                            if (data.success) {
-                                swal("Sucesso!", "Inserção bem-sucedida!", "success")
-                                    .then((value) => {
-                                        window.location.href = "{% url 'index' %}";
-                                    });
-                            } else {
-                                swal("Erro!", data.error, "error");
+                .then((willCreate) => {
+                    if (willCreate) {
+                        var form = $(this);
+                        // Certifique-se de que os campos de entrada de latitude e longitude sejam preenchidos antes de enviar o formulário
+                        $("#latitude").val(marker.getPosition().lat());
+                        $("#longitude").val(marker.getPosition().lng());
+                        $.ajax({
+                            type: form.attr('method'),
+                            url: form.attr('action'),
+                            data: form.serialize(),
+                            success: function (data) {
+                                if (data.success) {
+                                    swal("Sucesso!", "Inserção bem-sucedida!", "success")
+                                        .then((value) => {
+                                            window.location.href = "{% url 'my_scheduler_api:index' %}";
+                                        });
+                                } else {
+                                    swal("Erro!", data.error, "error");
+                                }
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                swal("Erro!", "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente mais tarde.", "error");
                             }
-                        },
-                        error: function(xhr, textStatus, errorThrown) {
-                            swal("Erro!", "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente mais tarde.", "error");
-                        }
-                    });
-                } else {
-                    swal("Ação cancelada", "A criação do serviço foi cancelada.", "info");
-                }
-            });
+                        });
+                    } else {
+                        swal("Ação cancelada", "A criação do serviço foi cancelada.", "info");
+                    }
+                });
         });
     });
 
     function initMap() {
         // Coordenadas iniciais
-        const initialCoords = { lat: -23.5505199, lng: -46.6333094 };
+        const initialCoords = {lat: -23.5505199, lng: -46.6333094};
         // Opções do mapa
         const mapOptions = {
             zoom: 8,
@@ -238,7 +249,7 @@
         };
         // Criando o mapa
         const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-        
+
         // Adicionando um marcador clicável
         marker = new google.maps.Marker({
             position: initialCoords,
@@ -247,14 +258,14 @@
         });
 
         // Evento de arrastar o marcador para atualizar as coordenadas
-        marker.addListener("dragend", function(event) {
+        marker.addListener("dragend", function (event) {
             document.getElementById("latitude").value = event.latLng.lat();
             document.getElementById("longitude").value = event.latLng.lng();
         });
     }
-    
+
     // Chamando a função de inicialização do mapa quando a página é carregada
     google.maps.event.addDomListener(window, "load", initMap);
-    </script>
+</script>
 </body>
 </html>
