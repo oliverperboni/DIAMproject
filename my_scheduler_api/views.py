@@ -11,9 +11,14 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .models import Employee
 from .serializers import *
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import *
 from django.contrib.auth import update_session_auth_hash
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
     return render(request, 'index.html')
@@ -171,186 +176,48 @@ def rejeitar_servico(request, servico_id):
 
 
 
-
-
-
-
-
-
-
-
-
-def services(request):
-    if request.method == "GET":
-        Service=Services.objects.all()
-        serialize = ServiceSerializer(Service,many=True)
-        return JsonResponse(serialize.data,safe=False)
-    if request.method == "POST":
-        Service = ServiceSerializer(data=request.data)
-        if Service.is_valid() :
-            Service.save()
-            return JsonResponse("Saved",safe=False)  
-
-def employee_details(request, pk):
-    try:
-        employee = Employee.objects.get(pk=pk)
-    except Employee.DoesNotExist:
-        return Response({"error": "Employee does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == "GET":
-        serialize = EmployeeSerializer(employee, many=False)
-        return Response(serialize.data)
-    elif request.method == "PUT":
-        serialize = EmployeeSerializer(employee, data=request.data)
-        if serialize.is_valid():
-            serialize.save()
-            return Response(serialize.data)
-        return Response(serialize.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == "DELETE":
-        employee.delete()
-        return Response({"message": "Employee deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
-def appointment(request):
-    return render(request, 'appointment.html')
-    
-def service_detail(request, pk):
-    try:
-        service = Servicos.objects.get(pk=pk)
-    except Servicos.DoesNotExist:
-        return Response({"error": "Service does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = ServiceSerializer(service)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = ServiceSerializer(service, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        service.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-def appointment_detail(request, pk):
-    try:
-        appointment = Appointment.objects.get(pk=pk)
-    except Appointment.DoesNotExist:
-        return Response({"error": "Appointment does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = AppointmentSerializer(appointment)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = AppointmentSerializer(appointment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        appointment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-def client(request):
-    if request.method == 'GET':
-        clients = Client.objects.all()
-        serializer = ClientSerializer(clients, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = ClientSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-def client_detail(request, pk):
-    try:
-        client = Client.objects.get(pk=pk)
-    except Client.DoesNotExist:
-        return Response({"error": "Client does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = ClientSerializer(client)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = ClientSerializer(client, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        client.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-def client_appointments(request, client_id):
-    try:
-        appointments = Appointment.objects.filter(client_id=client_id)
-        serializer = AppointmentSerializer1(appointments, many=True)
-        return Response(serializer.data)
-    except Appointment.DoesNotExist:
-        return Response({"error": "Client appointments not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-
-def company_list(request):
-    if request.method == 'GET':
-        companies = Company.objects.all()
-        serializer = CompanySerializer(companies, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    
-    elif request.method == 'POST':
-        serializer = CompanySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-
-def company_detail(request, pk):
-    try:
-        company = Company.objects.get(pk=pk)
-    except Company.DoesNotExist:
-        return JsonResponse({'error': 'Company does not exist'}, status=404)
-
-    if request.method == 'GET':
-        serializer = CompanySerializer(company)
-        return JsonResponse(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = CompanySerializer(company, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        company.delete()
-        return JsonResponse({'message': 'Company deleted successfully'}, status=204)
-    
-    
-def company_services(request, company_id):
-    try:
-        services = Servicos.objects.filter(company_id=company_id)
-        serializer = ServiceSerializer(services, many=True)
-        return Response(serializer.data)
-    except Servicos.DoesNotExist:
-        return Response({"error": "Services for this company not found"}, status=status.HTTP_404_NOT_FOUND)
-    
 @api_view(['GET'])
-def company_employees(request, company_id):
-    try:
-        employees = Employee.objects.filter(company_id=company_id)
-        serializer = EmployeeSerializer(employees, many=True)
-        return Response(serializer.data)
-    except Employee.DoesNotExist:
-        return Response({"error": "Employees for this company not found"}, status=status.HTTP_404_NOT_FOUND)
+def client_appointments(request, client_id):
+    client = get_object_or_404(Client, pk=client_id)
+    appointments = Appointment.objects.filter(client=client)
+    serializer = AppointmentSerializer(appointments, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def client_service_appointments(request, client_id, service_id):
+    client = get_object_or_404(Client, pk=client_id)
+    service = get_object_or_404(Services, pk=service_id, client=client)
+    appointments = Appointment.objects.filter(client=client, service=service)
+    serializer = AppointmentSerializer(appointments, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def employee_appointments(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    appointments = Appointment.objects.filter(employee=employee)
+    serializer = AppointmentSerializer(appointments, many=True)
+    return Response(serializer.data)
+
+@csrf_exempt
+def login_view(request):
+    if request.method == 'POST':
+        # Extrair dados do corpo da solicitação
+        data = json.loads(request.body)
+        username = data.get('email', None)
+        password = data.get('password', None)
+        
+        # Autenticar o usuário
+        user = authenticate(username=username, password=password)
+        
+        # Verificar se a autenticação foi bem-sucedida
+        if user is not None:
+            login(request, user)
+            # Retornar o ID do cliente se disponível
+            client_id = user.client.id if hasattr(user, 'client') else None
+            return JsonResponse({'message': 'Login bem-sucedido', 'client_id': client_id})
+        else:
+            return JsonResponse({'message': 'Credenciais inválidas'}, status=401)
+    
+    else:
+        return JsonResponse({'message': 'Método não permitido'}, status=405)
 
