@@ -2,11 +2,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, render, redirect
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
-from .models import Employee
 from .serializers import *
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -17,6 +17,7 @@ from rest_framework.decorators import *
 from django.contrib.auth import update_session_auth_hash
 from django.views.decorators.csrf import csrf_exempt
 
+
 def index(request):
     services = Services.objects.all()
     return render(request, 'index.html', {'services': services})
@@ -26,7 +27,7 @@ def register_or_login(request):
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "register":
-            # Processamento dos dados do formulário de registro
+            # Processamento dos dados do formulário de registo
             name = request.POST["name"]
             username = request.POST["username"]
             email = request.POST["email"]
@@ -54,7 +55,7 @@ def register_or_login(request):
         return render(request, "register.html")
 
 
-def logoutview(request):
+def logout_view(request):
     if request.method == "GET":
         request.session.flush()
         logout(request)
@@ -63,7 +64,7 @@ def logoutview(request):
 
 def create_service(request):
     if request.method == 'POST':
-        # Coletar os dados do POST
+        # Obter os dados do POST
         name = request.POST.get('name')
         selected_times = request.POST.getlist('selectedTimes')
         menu_items_text = request.POST.get('menuItems')
@@ -78,7 +79,7 @@ def create_service(request):
         menu_items_list = menu_items_text.splitlines()
         menu_items = [item.strip() for item in menu_items_list if item.strip()]
 
-        # Salvar os dados no banco de dados
+        # Guardar na base de dados
         service = Services.objects.create(
             name=name,
             selected_times=selected_times,
@@ -162,7 +163,7 @@ def fazer_upload(request):
     return render(request, 'index.html')
 
 
-def adminpage(request):
+def admin_page(request):
     servicos_pendentes = Services.objects.filter(is_approved=False)
     return render(request, 'adminpage.html', {'servicos_pendentes': servicos_pendentes})
 
@@ -220,6 +221,7 @@ def client_appointments(request, client_id):
     serializer = AppointmentSerializer(appointments, many=True)
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 def client_service_appointments(request, client_id, service_id):
     client = get_object_or_404(Client, pk=client_id)
@@ -228,12 +230,14 @@ def client_service_appointments(request, client_id, service_id):
     serializer = AppointmentSerializer(appointments, many=True)
     return Response(serializer.data)
 
-@api_view(['GET'])
-def employee_appointments(request, employee_id):
-    employee = get_object_or_404(Employee, pk=employee_id)
-    appointments = Appointment.objects.filter(employee=employee)
-    serializer = AppointmentSerializer(appointments, many=True)
-    return Response(serializer.data)
+
+# @api_view(['GET'])
+# def employee_appointments(request, employee_id):
+#     employee = get_object_or_404(Employee, pk=employee_id)
+#     appointments = Appointment.objects.filter(employee=employee)
+#     serializer = AppointmentSerializer(appointments, many=True)
+#     return Response(serializer.data)
+
 
 @csrf_exempt
 def login_view(request):
@@ -242,10 +246,10 @@ def login_view(request):
         data = json.loads(request.body)
         username = data.get('email', None)
         password = data.get('password', None)
-        
+
         # Autenticar o usuário
         user = authenticate(username=username, password=password)
-        
+
         # Verificar se a autenticação foi bem-sucedida
         if user is not None:
             login(request, user)
@@ -254,7 +258,49 @@ def login_view(request):
             return JsonResponse({'message': 'Login bem-sucedido', 'client_id': client_id})
         else:
             return JsonResponse({'message': 'Credenciais inválidas'}, status=401)
-    
+
     else:
         return JsonResponse({'message': 'Método não permitido'}, status=405)
 
+
+def service_detail(request, servico_id):
+    service = Services.objects.get(pk=servico_id)
+    reviews = service.review_set.all()
+    return render(request, 'serviceDetail.html', {'servico': service, 'reviews': reviews})
+
+
+def add_review(request, servico_id):
+    if request.method == 'POST':
+        # Verificar se o cliente está autenticado
+        if request.user.is_authenticated:
+            # Cliente está logado, obter informações do cliente
+            client = request.user.client  # Acessar o perfil do cliente associado ao usuário logado
+
+            rating = request.POST.get('rating')
+            description = request.POST.get('description')
+            service = get_object_or_404(Services, pk=servico_id)
+
+            review = Review(client=client, service=service, description=description, stars=rating)
+
+            # Salvar a revisão no banco de dados
+            review.save()
+            return JsonResponse({'message': 'Compromisso criado com sucesso!'})
+
+        else:
+            # Se o cliente não estiver autenticado, retornar uma resposta de erro
+            return JsonResponse({'error': 'O cliente deve estar autenticado para adicionar uma revisão'}, status=401)
+    else:
+        # Se o método da solicitação não for POST, retornar uma resposta de erro
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
+
+
+def like_review(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    review.like()  # Chama o método 'like' na revisão
+    return JsonResponse({'message': 'Like adicionado com sucesso!'})
+
+
+def dislike_review(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    review.dislike()  # Chama o método 'dislike' na revisão
+    return JsonResponse({'message': 'Dislike adicionado com sucesso!'})

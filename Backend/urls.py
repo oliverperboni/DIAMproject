@@ -35,10 +35,6 @@ urlpatterns = [
     # path('my_scheduler_api/companies/', views.company_list),
     # path('my_scheduler_api/companies/<int:pk>', views.company_detail),
     # path("my_scheduler_api/company/<int:company_id>/employees/", views.company_employees),
-    path('clients/<int:client_id>/appointments/', views.client_appointments, name='client_appointments'),
-    path('clients/<int:client_id>/services/<int:service_id>/appointments/', views.client_service_appointments, name='client_service_appointments'),
-    path('employees/<int:employee_id>/appointments/', views.employee_appointments, name='employee_appointments'),
-    path('api/login/', views.login_view, name='login'),
 ]
 
 if settings.DEBUG:
