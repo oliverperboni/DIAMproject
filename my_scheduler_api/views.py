@@ -246,7 +246,8 @@ def login_view(request):
         data = json.loads(request.body)
         username = data.get('email', None)
         password = data.get('password', None)
-
+        print(username)
+        print(password)
         # Autenticar o usuário
         user = authenticate(username=username, password=password)
 

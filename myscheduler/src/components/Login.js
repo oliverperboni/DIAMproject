@@ -7,7 +7,7 @@ const Login = ({ onLogin }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/login/', { email, password });
+      const response = await axios.post('http://127.0.0.1:8000/my_scheduler_api/api/login/', { email, password });
       const user = response.data;
       onLogin(user.client_id);
     } catch (error) {

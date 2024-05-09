@@ -7,7 +7,7 @@ const AppointmentsPage = ({ user }) => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/clients/${user}/appointments/`);
+        const response = await axios.get(`http://127.0.0.1:8000/my_scheduler_api/clients/${user}/appointments/`);
         setAppointments(response.data.appointments);
       } catch (error) {
         console.error('Failed to fetch appointments:', error);
@@ -21,7 +21,7 @@ const AppointmentsPage = ({ user }) => {
       <h2>Appointments</h2>
       <h3>Appointments made by you:</h3>
       <ul>
-        {appointments.map((appointment) => (
+        {appointments && appointments.map((appointment) => (
           <li key={appointment.id}>
             Employee: {appointment.employee}<br />
             Service: {appointment.service}<br />
