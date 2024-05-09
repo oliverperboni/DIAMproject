@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Service Provider{% endblock %}</title>
+    {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
@@ -14,157 +16,177 @@
 </head>
 <body>
 <div class="container">
-<div class="row flex-lg-nowrap">
-  <div class="col">
-    <div class="row">
-      <div class="col mb-3">
-        <div class="card">
-          <div class="card-body">
-            <div class="e-profile">
-              <div class="row">
-                <div class="col-12 col-sm-auto mb-3">
-                  <div class="mx-auto" style="width: 140px;">
-                    <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; background-color: rgb(233, 236, 239);">
-                        <img src="{{ user.client.image }}" alt="Profile Image" style="max-width: 100%; max-height: 100%;">
-                    </div>
-                  </div>
-                </div>
-                <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
-                  <div class="text-center text-sm-left mb-2 mb-sm-0">
-                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ client.name }}</h4>
-                    <p class="mb-0">@{{ client.user.username }}</p>
-                    <form id="uploadForm" method="post" action="{% url 'fazer_upload' %}" enctype="multipart/form-data">
-                      {% csrf_token %}
-                      <div class="mt-2">
-                          <button class="btn btn-primary" id="change-photo-btn" type="button">
-                              <i class="fa fa-fw fa-camera"></i>
-                              <span>Change Photo</span>
-                          </button>
-                          <input type="file" id="fileInput" name="myfile" style="display: none;">
-                      </div>
-                      <button id="submitBtn" class="btn btn-primary" type="submit" style="display: none;">Submit</button>
-                  </form>
-                  </div>
-                  <div class="text-center text-sm-right">
-                    <span class="badge badge-secondary">administrator</span>
-                  </div>
-                </div>
-              </div>
-              <ul class="nav nav-tabs">
-                <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
-              </ul>
-              <div class="tab-content pt-3">
-                <div class="tab-pane active">
-                  <form class="form" action="{% url 'update_client' %}" method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                      <div class="col">
-                        <div class="row">
-                          <div class="col">
-                            <div class="form-group">
-                              <label>Full Name</label>
-                              <input class="form-control" type="text" name="name" value="{{ client.name }}">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col">
-                            <div class="form-group">
-                              <label>Email</label>
-                              <input class="form-control" type="text" name="email" value="{{ client.email }}">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                              <div class="form-group">
-                                <label>Phone</label>
-                                <input class="form-control" type="number" name="phone" value="{{ client.phone }}">
-                              </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                  <label>City</label>
-                                  <input class="form-control" type="text" name="city" value="{{ client.location }}">
+    <div class="row flex-lg-nowrap">
+        <div class="col">
+            <div class="row">
+                <div class="col mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="e-profile">
+                                <div class="row">
+                                    <div class="col-12 col-sm-auto mb-3">
+                                        <div class="mx-auto" style="width: 140px;">
+                                            <div class="d-flex justify-content-center align-items-center rounded"
+                                                 style="height: 140px; background-color: rgb(233, 236, 239);">
+                                                {% load static %}
+                                                {% if user.client %}
+                                                    <img src="{{ client.image }}" alt="Profile Image"
+                                                         style="max-width: 100%; max-height: 100%;">
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                                        <div class="text-center text-sm-left mb-2 mb-sm-0">
+                                            <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ client.name }}</h4>
+                                            <p class="mb-0">@{{ client.user.username }}</p>
+                                            <form id="uploadForm" method="post"
+                                                  action="{% url 'my_scheduler_api:fazer_upload' %}"
+                                                  enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <div class="mt-2">
+                                                    <button class="btn btn-primary" id="change-photo-btn" type="button">
+                                                        <i class="fa fa-fw fa-camera"></i>
+                                                        <span>Change Photo</span>
+                                                    </button>
+                                                    <input type="file" id="fileInput" name="myfile"
+                                                           style="display: none;">
+                                                </div>
+                                                <button id="submitBtn" class="btn btn-primary" type="submit"
+                                                        style="display: none;">Submit
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="text-center text-sm-right">
+                                            <span class="badge badge-secondary">administrator</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
+                                </ul>
+                                <div class="tab-content pt-3">
+                                    <div class="tab-pane active">
+                                        <form class="form" action="{% url 'my_scheduler_api:update_client' %}"
+                                              method="post">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Full Name</label>
+                                                                <input class="form-control" type="text" name="name"
+                                                                       value="{{ client.name }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Email</label>
+                                                                <input class="form-control" type="text" name="email"
+                                                                       value="{{ client.email }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Phone</label>
+                                                                <input class="form-control" type="number" name="phone"
+                                                                       value="{{ client.phone }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>City</label>
+                                                                <input class="form-control" type="text" name="city"
+                                                                       value="{{ client.location }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-sm-6 mb-3">
+                                                    <div class="mb-2"><b>Change Password</b></div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Current Password</label>
+                                                                <input class="form-control" type="password"
+                                                                       name="current_password" placeholder="••••••">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>New Password</label>
+                                                                <input class="form-control" type="password"
+                                                                       name="new_password" placeholder="••••••">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Confirm <span
+                                                                        class="d-none d-xl-inline">Password</span></label>
+                                                                <input class="form-control" type="password"
+                                                                       name="confirm_password" placeholder="••••••">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col d-flex justify-content-end">
+                                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                  <div class="col-12 col-sm-6 mb-3">
-                    <div class="mb-2"><b>Change Password</b></div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>Current Password</label>
-                          <input class="form-control" type="password" name="current_password" placeholder="••••••">
+                <div class="col-12 col-md-3 mb-3">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="px-xl-3">
+                                <a href="{% url 'my_scheduler_api:logoutview' %}" class="btn btn-block btn-secondary">
+                                    <i class="fa fa-sign-out"></i> Logout
+                                </a>
+                            </div>
                         </div>
-                      </div>
                     </div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>New Password</label>
-                          <input class="form-control" type="password" name="new_password" placeholder="••••••">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title font-weight-bold">Support</h6>
+                            <p class="card-text">Get fast, free help from our friendly assistants.</p>
+                            <button type="button" class="btn btn-primary">Contact Us</button>
                         </div>
-                      </div>
                     </div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                          <input class="form-control" type="password" name="confirm_password" placeholder="••••••"></div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-                <div class="row">
-                  <div class="col d-flex justify-content-end">
-                    <button class="btn btn-primary" type="submit">Save Changes</button>
-                  </div>
-                </div>
-            </form>
             </div>
-            </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-3 mb-3">
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="px-xl-3">
-                <a href="{% url 'logoutview' %}" class="btn btn-block btn-secondary">
-                    <i class="fa fa-sign-out"></i> Logout
-                </a>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <h6 class="card-title font-weight-bold">Support</h6>
-            <p class="card-text">Get fast, free help from our friendly assistants.</p>
-            <button type="button" class="btn btn-primary">Contact Us</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-  </div>
-</div>
+        </div>
+    </div>
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // Quando o botão 'change-photo-btn' é clicado, clique no campo de arquivo 'fileInput'
-    document.getElementById('change-photo-btn').addEventListener('click', function() {
-        document.getElementById('fileInput').click();
-    });
+    document.addEventListener("DOMContentLoaded", function () {
+        // Quando o botão 'change-photo-btn' é clicado, clique no campo de arquivo 'fileInput'
+        document.getElementById('change-photo-btn').addEventListener('click', function () {
+            document.getElementById('fileInput').click();
+        });
 
-    // Quando um arquivo é selecionado, acione o evento de clique no botão de envio do formulário
-    document.getElementById('fileInput').addEventListener('change', function() {
-        document.getElementById('submitBtn').click();
+        // Quando um arquivo é selecionado, acione o evento de clique no botão de envio do formulário
+        document.getElementById('fileInput').addEventListener('change', function () {
+            document.getElementById('submitBtn').click();
+        });
     });
-  });
 </script>
 </body>

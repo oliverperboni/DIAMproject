@@ -1,6 +1,3 @@
-from venv import logger
-from django.shortcuts import get_object_or_404, redirect, render
-from Backend.auth_backends.custom_auth_backend import EmailAuthBackend
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import FileSystemStorage
@@ -21,14 +18,16 @@ from django.contrib.auth import update_session_auth_hash
 from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
-    return render(request, 'index.html')
+    services = Services.objects.all()
+    return render(request, 'index.html', {'services': services})
+
 
 def register_or_login(request):
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "register":
             # Processamento dos dados do formulário de registro
-            name=request.POST["name"]
+            name = request.POST["name"]
             username = request.POST["username"]
             email = request.POST["email"]
             password = request.POST["password"]
@@ -47,20 +46,21 @@ def register_or_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                request.session['user_id'] = user.id 
+                request.session['user_id'] = user.id
                 return index(request)
             else:
                 return index(request)
     else:
         return render(request, "register.html")
-    
+
 
 def logoutview(request):
     if request.method == "GET":
         request.session.flush()
         logout(request)
         return redirect('index')
-    
+
+
 def create_service(request):
     if request.method == 'POST':
         # Coletar os dados do POST
@@ -70,10 +70,14 @@ def create_service(request):
         description = request.POST.get('serviceDescription')
         icon = request.FILES.get('serviceIcon')
         banner = request.FILES.get('serviceBanner')
-        
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+
+        location = f"{latitude},{longitude}"
+
         menu_items_list = menu_items_text.splitlines()
         menu_items = [item.strip() for item in menu_items_list if item.strip()]
-        
+
         # Salvar os dados no banco de dados
         service = Services.objects.create(
             name=name,
@@ -82,11 +86,13 @@ def create_service(request):
             description=description,
             icon=icon,
             banner=banner,
+            address=location,
             client=request.user.client
         )
         service.save()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': True})
+
 
 def profile(request):
     try:
@@ -98,6 +104,7 @@ def profile(request):
     }
     return render(request, "profile.html", context)
 
+
 @login_required
 def update_client(request):
     if request.method == 'POST':
@@ -105,7 +112,7 @@ def update_client(request):
         email = request.POST['email']
         phone = request.POST['phone']
         location = request.POST['city']
-        
+
         try:
             client = Client.objects.get(user=request.user)
             client.name = name
@@ -121,11 +128,11 @@ def update_client(request):
                 phone=phone,
                 location=location
             )
-            
+
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
-        
+
         if current_password and new_password and confirm_password:
             # Verificar se a senha atual está correta
             if request.user.check_password(current_password):
@@ -136,9 +143,11 @@ def update_client(request):
                     request.user.save()
                     # Atualizar a sessão de autenticação do usuário
                     update_session_auth_hash(request, request.user)
-        return render(request, 'index.html')  # Redirecionar para a página de perfil do usuário após o salvamento/atualização
+        return render(request,
+                      'index.html')  # Redirecionar para a página de perfil do usuário após o salvamento/atualização
     else:
         return render(request, 'index.html')  # Renderizar o formulário HTML para atualizar o cliente
+
 
 def fazer_upload(request):
     if request.method == 'POST' and request.FILES['myfile']:
@@ -152,9 +161,11 @@ def fazer_upload(request):
         return render(request, 'index.html', {'uploaded_file_url': uploaded_file_url})
     return render(request, 'index.html')
 
+
 def adminpage(request):
     servicos_pendentes = Services.objects.filter(is_approved=False)
     return render(request, 'adminpage.html', {'servicos_pendentes': servicos_pendentes})
+
 
 def aprovar_servico(request, servico_id):
     if request.method == 'POST':
@@ -164,7 +175,8 @@ def aprovar_servico(request, servico_id):
         return JsonResponse({'message': 'Serviço aprovado com sucesso!'})
     else:
         return JsonResponse({'error': 'Método não permitido'}, status=405)
-    
+
+
 def rejeitar_servico(request, servico_id):
     if request.method == 'POST':
         servico = get_object_or_404(Services, pk=servico_id)
@@ -174,6 +186,31 @@ def rejeitar_servico(request, servico_id):
         return HttpResponse('Método não permitido', status=405)
 
 
+def appointment(request, servico_id):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            client = request.user.client
+            name = client.name
+            email = client.email
+            phone = client.phone
+        else:
+            client = None
+            name = request.POST.get('nome')
+            email = request.POST.get('email')
+            phone = request.POST.get('phone')
+
+        service = get_object_or_404(Services, pk=servico_id)
+        date = request.POST.get('data')
+        time = request.POST.get('selected_times2')
+        menu_items = request.POST.get('menuItems2')
+
+        appointment = Appointment.objects.create(client=client, service=service, date=date, time=time,
+                                                 menuItems=menu_items, name=name, email=email, phone=phone)
+        appointment.save()
+        return JsonResponse({'message': 'Compromisso criado com sucesso!'})
+    else:
+        service = get_object_or_404(Services, pk=servico_id)
+        return render(request, 'appointment.html', {'servico': service})
 
 
 @api_view(['GET'])
