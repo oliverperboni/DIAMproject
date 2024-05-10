@@ -144,4 +144,4 @@ AUTHENTICATION_BACKENDS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/my_scheduler_api/static/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'my_scheduler_api/static/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, '/my_scheduler_api/static/media')

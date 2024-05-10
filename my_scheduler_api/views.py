@@ -59,7 +59,7 @@ def logout_view(request):
     if request.method == "GET":
         request.session.flush()
         logout(request)
-        return redirect('index')
+        return redirect('my_scheduler_api:index')
 
 
 def create_service(request):
@@ -295,13 +295,17 @@ def add_review(request, servico_id):
         return JsonResponse({'error': 'Método não permitido'}, status=405)
 
 
-def like_review(request, review_id):
-    review = get_object_or_404(Review, pk=review_id)
-    review.like()  # Chama o método 'like' na revisão
-    return JsonResponse({'message': 'Like adicionado com sucesso!'})
+def like_review(request, servico_id, review_id):
+    if request.method == 'POST':
+        review = get_object_or_404(Review, pk=review_id)
+        review.like()  # Chama o método 'like' na revisão
+        return JsonResponse({'message': 'Like adicionado com sucesso!'})
+    else:
+        # Se o método da solicitação não for POST, retornar uma resposta de erro
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
 
 
-def dislike_review(request, review_id):
+def dislike_review(request, servico_id, review_id):
     review = get_object_or_404(Review, pk=review_id)
     review.dislike()  # Chama o método 'dislike' na revisão
     return JsonResponse({'message': 'Dislike adicionado com sucesso!'})

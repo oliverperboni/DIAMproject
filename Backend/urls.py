@@ -21,20 +21,8 @@ from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
-    path('my_scheduler_api/', include('my_scheduler_api.urls')),
+    path('my_scheduler_api/', include('my_scheduler_api.urls', namespace='my_scheduler_api')),
     path('admin/', admin.site.urls),
-    # path("my_scheduler_api/services",views.services),
-    # path("my_scheduler_api/company/<int:company_id>/services",views.company_services),
-    # path("my_scheduler_api/appointment",views.appointment, name='appointment'),
-    # path("my_scheduler_api/employees/<int:pk>",views.employee_details),
-    # path('my_scheduler_api/services/<int:pk>', views.service_detail),
-    # path('my_scheduler_api/appointments/<int:pk>', views.appointment_detail),
-    # path('my_scheduler_api/clients', views.client),
-    # path('my_scheduler_api/clietns/<int:pk>', views.client_detail),
-    # path('my_scheduler_api/clients/<int:client_id>/appointments', views.client_appointments),
-    # path('my_scheduler_api/companies/', views.company_list),
-    # path('my_scheduler_api/companies/<int:pk>', views.company_detail),
-    # path("my_scheduler_api/company/<int:company_id>/employees/", views.company_employees),
 ]
 
 if settings.DEBUG:

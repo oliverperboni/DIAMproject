@@ -79,7 +79,7 @@ class Review(models.Model):
         self.save(update_fields=['dislikes'])
 
     def __str__(self):
-        return f"Review {self.id}: {self.client.username} - {self.service.name}"
+        return f"Review {self.id}: {self.client.name} - {self.service.name}"
 
 
 class Appointment(models.Model):

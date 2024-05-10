@@ -17,11 +17,10 @@ urlpatterns = [
 
     path('serviceDetail/<int:servico_id>', views.service_detail, name='serviceDetail'),
     path('add_review/<int:servico_id>', views.add_review, name='add_review'),
-    path('like_review/<int:review_id>', views.like_review, name='like_review'),
-    path('dislike_review/<int:review_id>', views.dislike_review, name='dislike_review'),
+    path('serviceDetail/<int:servico_id>/like_review/<int:review_id>', views.like_review, name='like_review'),
+    path('serviceDetail/<int:servico_id>/dislike_review/<int:review_id>', views.dislike_review, name='dislike_review'),
     path('clients/<int:client_id>/appointments/', views.client_appointments, name='client_appointments'),
     path('clients/<int:client_id>/services/<int:service_id>/appointments/', views.client_service_appointments,
          name='client_service_appointments'),
-    # path('employees/<int:employee_id>/appointments/', views.employee_appointments, name='employee_appointments'),
     path('api/login/', views.login_view, name='login'),
 ]

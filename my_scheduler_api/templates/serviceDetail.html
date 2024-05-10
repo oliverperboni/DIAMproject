@@ -262,8 +262,8 @@
                 </div>
                 <div id="map"></div>
                 <div class="mb-2 mt-2 text-center">
-                    <a href="{% url 'my_scheduler_api:appointment' servico.id %}" class="btn btn-primary">Deseja fazer
-                        uma marcação?</a>
+                    <a href="{% url 'my_scheduler_api:appointment' servico.id %}" class="btn btn-primary">Fazer uma 
+                        marcação?</a>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commentModal">Deixar
                         comentário
                     </button>
@@ -334,13 +334,12 @@
                                             <div class="post-content">
                                                 <div class="post-container">
                                                     {% for review in reviews %}
-                                                        <img src="{{ review.client.image.url }}" alt="user"
+                                                        <img src="{{ review.client.image }}" alt="user"
                                                              class="profile-photo-md pull-left">
                                                         <div class="post-detail">
                                                             <div class="user-info">
                                                                 <h5>{{ review.client.name }}</h5>
-                                                                <p class="text-muted">Published a photo about 3 mins
-                                                                    ago</p>
+{#                                                                <p class="text-muted"></p>#}
                                                             </div>
                                                             <div class="reaction">
                                                                 <a href="#"
@@ -412,7 +411,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/like_review/' + reviewId + '/',
+                url: location + '/like_review/' + reviewId,
                 data: {
                     'like_status': likeStatus ? 'unlike' : 'like', // Se já está selecionado, desmarca, caso contrário, marca
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
@@ -434,7 +433,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/dislike_review/' + reviewId + '/',
+                url: location + '/dislike_review/' + reviewId,
                 data: {
                     'dislike_status': dislikeStatus ? 'undislike' : 'dislike', // Se já está selecionado, desmarca, caso contrário, marca
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
