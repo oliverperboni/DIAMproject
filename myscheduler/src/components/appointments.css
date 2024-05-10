@@ -1,0 +1,45 @@
+/* appointments.css */
+
+/* Estilo para o contêiner principal */
+.appointments-container {
+  margin: 0 auto;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Estilo para o título principal */
+.appointments-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Estilo para o título dos compromissos feitos pelo usuário */
+.appointments-subtitle {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+/* Estilo para a lista de compromissos */
+.appointments-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Estilo para cada item da lista de compromissos */
+.appointments-item {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* Estilo para o texto dentro de cada item da lista de compromissos */
+.appointments-text {
+  margin-bottom: 5px;
+}
