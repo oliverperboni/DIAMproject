@@ -14,23 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls import include
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path,include
-from my_scheduler_api import views
-from django.views.generic import RedirectView
+from django.urls import path
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path("my_scheduler_api/",views.index),
-    path('my_scheduler_api/register/', views.register_or_login, name='register_or_login'),
-    path('my_scheduler_api/profile/', views.profile, name='profile'),
-    path('my_scheduler_api/adminpage/', views.adminpage, name='adminpage'),
-    path("logoutview", views.logoutview, name='logoutview'),
-    path("fazer_upload", views.fazer_upload, name='fazer_upload'),
-    path('create_service', views.create_service, name='create_service'),
-    path('update_client', views.update_client, name='update_client'),
-    path('aprovar_servico/<int:servico_id>/', views.aprovar_servico, name='aprovar_servico'),
-    path('rejeitar_servico/<int:servico_id>/', views.rejeitar_servico, name='rejeitar_servico'),
+    path('my_scheduler_api/', include('my_scheduler_api.urls')),
     path('admin/', admin.site.urls),
     # path("my_scheduler_api/services",views.services),
     # path("my_scheduler_api/company/<int:company_id>/services",views.company_services),
@@ -44,8 +35,7 @@ urlpatterns = [
     # path('my_scheduler_api/companies/', views.company_list),
     # path('my_scheduler_api/companies/<int:pk>', views.company_detail),
     # path("my_scheduler_api/company/<int:company_id>/employees/", views.company_employees),
-    path('clients/<int:client_id>/appointments/', views.client_appointments, name='client_appointments'),
-    path('clients/<int:client_id>/services/<int:service_id>/appointments/', views.client_service_appointments, name='client_service_appointments'),
-    path('employees/<int:employee_id>/appointments/', views.employee_appointments, name='employee_appointments'),
-    path('api/login/', views.login_view, name='login'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

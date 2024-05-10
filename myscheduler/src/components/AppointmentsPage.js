@@ -18,6 +18,7 @@ const AppointmentsPage = ({ user }) => {
   }, [user]);
 
   return (
+
     <div className="appointments-container">
       <h2 className="appointments-title">Appointments</h2>
       <h3 className="appointments-subtitle">Appointments made by you:</h3>

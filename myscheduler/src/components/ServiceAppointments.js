@@ -9,7 +9,7 @@ const AppointmentPage = ({ clientId }) => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get(`/api/clients/${clientId}/services/`);
+        const response = await axios.get(`http://127.0.0.1:8000/my_scheduler_api/clients/${clientId}/services/`);
         setServices(response.data);
       } catch (error) {
         console.error('Failed to fetch services:', error);
