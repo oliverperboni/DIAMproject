@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './appointments.css'; // Importe o arquivo CSS
 
 const AppointmentsPage = ({ user }) => {
   const [appointments, setAppointments] = useState([]);
@@ -17,16 +18,17 @@ const AppointmentsPage = ({ user }) => {
   }, [user]);
 
   return (
-    <div>
-      <h2>Appointments</h2>
-      <h3>Appointments made by you:</h3>
-      <ul>
+
+    <div className="appointments-container">
+      <h2 className="appointments-title">Appointments</h2>
+      <h3 className="appointments-subtitle">Appointments made by you:</h3>
+      <ul className="appointments-list">
         {appointments && appointments.map((appointment) => (
-          <li key={appointment.id}>
-            Employee: {appointment.employee}<br />
-            Service: {appointment.service}<br />
-            Date: {appointment.date}<br />
-            Time: {appointment.time}
+          <li key={appointment.id} className="appointments-item">
+            <span className="appointments-text">Employee: {appointment.employee}</span>
+            <span className="appointments-text">Service: {appointment.service}</span>
+            <span className="appointments-text">Date: {appointment.date}</span>
+            <span className="appointments-text">Time: {appointment.time}</span>
           </li>
         ))}
       </ul>
