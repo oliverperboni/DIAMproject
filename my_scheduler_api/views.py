@@ -295,17 +295,46 @@ def add_review(request, servico_id):
         return JsonResponse({'error': 'Método não permitido'}, status=405)
 
 
+# def like_review(request, servico_id, review_id):
+#     if request.method == 'POST':
+#         review = get_object_or_404(Review, pk=review_id)
+#         review.like()  # Chama o método 'like' na revisão
+#         return JsonResponse({'message': 'Like adicionado com sucesso!'})
+#     else:
+#         # Se o método da solicitação não for POST, retornar uma resposta de erro
+#         return JsonResponse({'error': 'Método não permitido'}, status=405)
+    
+    
 def like_review(request, servico_id, review_id):
     if request.method == 'POST':
-        review = get_object_or_404(Review, pk=review_id)
-        review.like()  # Chama o método 'like' na revisão
-        return JsonResponse({'message': 'Like adicionado com sucesso!'})
+        # Obtenha o ID do usuário da solicitação POST
+        user_id = request.POST.get('user_id')
+    
+        if user_id is not None:
+            review = get_object_or_404(Review, pk=review_id)
+            # Chama o método 'like' na revisão, passando o ID do usuário
+            review.like(user_id)
+            return JsonResponse({'message': 'Like adicionado com sucesso!'})
+        else:
+            return JsonResponse({'error': 'ID do usuário não fornecido na solicitação'}, status=400)
     else:
         # Se o método da solicitação não for POST, retornar uma resposta de erro
         return JsonResponse({'error': 'Método não permitido'}, status=405)
 
 
+
 def dislike_review(request, servico_id, review_id):
-    review = get_object_or_404(Review, pk=review_id)
-    review.dislike()  # Chama o método 'dislike' na revisão
-    return JsonResponse({'message': 'Dislike adicionado com sucesso!'})
+    if request.method == 'POST':
+        # Obtenha o ID do usuário da solicitação POST
+        user_id = request.POST.get('user_id')
+        if user_id is not None:
+            review = get_object_or_404(Review, pk=review_id)
+            # Chama o método 'dislike' na revisão, passando o ID do usuário
+            review.dislike(user_id)
+            return JsonResponse({'message': 'Dislike adicionado com sucesso!'})
+        else:
+            return JsonResponse({'error': 'ID do usuário não fornecido na solicitação'}, status=400)
+    else:
+        # Se o método da solicitação não for POST, retornar uma resposta de erro
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
+
