@@ -91,19 +91,24 @@ class Review(models.Model):
     dislikes = models.BigIntegerField(default=0)
 
     def like(self, user):
-        clientToAdd = Client.objects.get(id=2)
+        clientToAdd = Client.objects.get(id=user)
         if not Like.objects.filter(review=self, client=clientToAdd).exists():
             Like.objects.create(review=self, client=clientToAdd, is_like=True)
             self.likes += 1
+            self.dislikes -= 1
             self.save(update_fields=['likes'])
+            self.save(update_fields=['dislikes'])
             return True
         return False
 
     def dislike(self, user):
-        clientToAdd = Client.objects.get(id=2)
-        if not Like.objects.filter(review=self, client=clientToAdd).exists():
-            Like.objects.create(review=self, client=clientToAdd, is_like=False)
+        clientToAdd = Client.objects.get(id=user)
+        if Like.objects.filter(review=self, client=clientToAdd).exists():
+            like_objeto = Like.objects.filter(review=self, client=clientToAdd)
+            like_objeto.delete() 
+            self.likes -= 1
             self.dislikes += 1
+            self.save(update_fields=['likes'])
             self.save(update_fields=['dislikes'])
             return True
         return False

@@ -8,10 +8,6 @@ class ServiceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class AppointmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Appointment
-        fields = "__all__"
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -38,4 +34,11 @@ class CompanySerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
+        fields = "__all__"
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    client = ClientSerializer()
+    service = ServiceSerializer()
+    class Meta:
+        model = Appointment
         fields = "__all__"

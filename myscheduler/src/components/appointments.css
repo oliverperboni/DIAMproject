@@ -28,6 +28,7 @@
 /* Estilo para a lista de compromissos */
 .appointments-list {
   list-style-type: none;
+  display: block;
   padding: 0;
 }
 
@@ -36,10 +37,12 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
-  margin-bottom: 10px;
+  margin: 10px;
 }
 
 /* Estilo para o texto dentro de cada item da lista de compromissos */
 .appointments-text {
-  margin-bottom: 5px;
+  margin
+  : 5px;
+  
 }

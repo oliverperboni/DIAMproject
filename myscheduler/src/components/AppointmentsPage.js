@@ -9,7 +9,8 @@ const AppointmentsPage = ({ user }) => {
     const fetchAppointments = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/my_scheduler_api/clients/${user}/appointments/`);
-        setAppointments(response.data.appointments);
+        console.log(user)
+        setAppointments(response.data);
       } catch (error) {
         console.error('Failed to fetch appointments:', error);
       }
@@ -17,18 +18,19 @@ const AppointmentsPage = ({ user }) => {
     fetchAppointments();
   }, [user]);
 
+
+
   return (
 
     <div className="appointments-container">
-      <h2 className="appointments-title">Appointments</h2>
-      <h3 className="appointments-subtitle">Appointments made by you:</h3>
+      <h2 className="appointments-title">Marcações</h2>
+      <h3 className="appointments-subtitle">Marcações feitas por você:</h3>
       <ul className="appointments-list">
         {appointments && appointments.map((appointment) => (
           <li key={appointment.id} className="appointments-item">
-            <span className="appointments-text">Employee: {appointment.employee}</span>
-            <span className="appointments-text">Service: {appointment.service}</span>
-            <span className="appointments-text">Date: {appointment.date}</span>
-            <span className="appointments-text">Time: {appointment.time}</span>
+            <li className="appointments-text">Empresa: {appointment.service.name}</li> 
+            <li className="appointments-text">Data : {appointment.date}</li>
+            <li className="appointments-text">Hora : {appointment.time}</li>
           </li>
         ))}
       </ul>
