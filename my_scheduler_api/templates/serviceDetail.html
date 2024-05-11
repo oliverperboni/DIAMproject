@@ -408,12 +408,14 @@
             e.preventDefault();
             var reviewId = $(this).data('review-id');
             var likeStatus = $(this).hasClass('active');
-
+            var userId = '{{ request.user.id }}';
+            console.log(userId)
             $.ajax({
                 type: 'POST',
                 url: location + '/like_review/' + reviewId,
                 data: {
-                    'like_status': likeStatus ? 'unlike' : 'like', // Se já está selecionado, desmarca, caso contrário, marca
+                    'like_status': likeStatus ? 'unlike' : 'like',
+                    'user_id': userId,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function (data) {
@@ -430,12 +432,14 @@
             e.preventDefault();
             var reviewId = $(this).data('review-id');
             var dislikeStatus = $(this).hasClass('active');
+            var userId = '{{ request.user.id }}';
 
             $.ajax({
                 type: 'POST',
                 url: location + '/dislike_review/' + reviewId,
                 data: {
-                    'dislike_status': dislikeStatus ? 'undislike' : 'dislike', // Se já está selecionado, desmarca, caso contrário, marca
+                    'dislike_status': dislikeStatus ? 'undislike' : 'dislike',
+                    'user_id': userId, // Se já está selecionado, desmarca, caso contrário, marca
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function (data) {

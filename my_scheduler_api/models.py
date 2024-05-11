@@ -61,6 +61,26 @@ class Services(models.Model):
     def __str__(self):
         return f"Service {self.id}: {self.name} - Client: {self.client.name}"
 
+# OLI 11/05/2024
+# class Review(models.Model):
+#     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+#     service = models.ForeignKey(Services, on_delete=models.CASCADE)
+#     description = models.TextField()
+#     stars = models.SmallIntegerField()
+#     likes = models.BigIntegerField(default=0)
+#     dislikes = models.BigIntegerField(default=0)
+
+#     def like(self):
+#         self.likes += 1
+#         self.save(update_fields=['likes'])
+
+#     def dislike(self):
+#         self.dislikes += 1
+#         self.save(update_fields=['dislikes'])
+
+#     def __str__(self):
+#         return f"Review {self.id}: {self.client.name} - {self.service.name}"
+
 
 class Review(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
@@ -70,16 +90,35 @@ class Review(models.Model):
     likes = models.BigIntegerField(default=0)
     dislikes = models.BigIntegerField(default=0)
 
-    def like(self):
-        self.likes += 1
-        self.save(update_fields=['likes'])
+    def like(self, user):
+        clientToAdd = Client.objects.get(id=2)
+        if not Like.objects.filter(review=self, client=clientToAdd).exists():
+            Like.objects.create(review=self, client=clientToAdd, is_like=True)
+            self.likes += 1
+            self.save(update_fields=['likes'])
+            return True
+        return False
 
-    def dislike(self):
-        self.dislikes += 1
-        self.save(update_fields=['dislikes'])
+    def dislike(self, user):
+        clientToAdd = Client.objects.get(id=2)
+        if not Like.objects.filter(review=self, client=clientToAdd).exists():
+            Like.objects.create(review=self, client=clientToAdd, is_like=False)
+            self.dislikes += 1
+            self.save(update_fields=['dislikes'])
+            return True
+        return False
 
     def __str__(self):
         return f"Review {self.id}: {self.client.name} - {self.service.name}"
+
+class Like(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    is_like = models.BooleanField(default=True)  # True para like, False para dislike
+
+    class Meta:
+        unique_together = ('review', 'client')  # Garante que um usuário só pode dar um like ou dislike uma vez por revisão
+
 
 
 class Appointment(models.Model):
