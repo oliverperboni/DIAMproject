@@ -338,3 +338,12 @@ def dislike_review(request, servico_id, review_id):
         # Se o método da solicitação não for POST, retornar uma resposta de erro
         return JsonResponse({'error': 'Método não permitido'}, status=405)
 
+
+@api_view(['POST'])
+def delete_appointment(request, appointment_id):
+    try:
+        appointment = Appointment.objects.get(pk=appointment_id)
+        appointment.delete()
+        return Response({'message': 'Appointment deleted successfully.'}, status=status.HTTP_200_OK)
+    except Appointment.DoesNotExist:
+        return Response({'error': 'Appointment not found.'}, status=status.HTTP_404_NOT_FOUND)
