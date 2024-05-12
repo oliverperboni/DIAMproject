@@ -10,7 +10,6 @@ const AppointmentsPage = ({ user }) => {
     const fetchAppointments = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/my_scheduler_api/clients/${user}/appointments/`);
-        console.log(user)
         setAppointments(response.data);
       } catch (error) {
         console.error('Failed to fetch appointments:', error);
@@ -19,10 +18,17 @@ const AppointmentsPage = ({ user }) => {
     fetchAppointments();
   }, [user]);
 
-
+  const deleteAppointment = async (appointmentId) => {
+    try {
+      await axios.post(`http://127.0.0.1:8000/my_scheduler_api/appointment/${appointmentId}/delete/`);
+      setAppointments(appointments.filter(appointment => appointment.id !== appointmentId));
+      console.log('Appointment deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete appointment:', error);
+    }
+  };
 
   return (
-
     <div className="appointments-container">
       <h2 className="appointments-title">Marcações</h2>
       <h3 className="appointments-subtitle">Marcações feitas por você:</h3>
@@ -32,6 +38,7 @@ const AppointmentsPage = ({ user }) => {
             <li className="appointments-text">Empresa: {appointment.service.name}</li> 
             <li className="appointments-text">Data : {appointment.date}</li>
             <li className="appointments-text">Hora : {appointment.time}</li>
+            <button onClick={() => deleteAppointment(appointment.id)}>Excluir</button>
           </li>
         ))}
       </ul>

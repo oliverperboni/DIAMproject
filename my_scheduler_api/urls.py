@@ -23,4 +23,5 @@ urlpatterns = [
     path('clients/<int:client_id>/services/<int:service_id>/appointments/', views.client_service_appointments,
          name='client_service_appointments'),
     path('api/login/', views.login_view, name='login'),
+    path('appointment/<int:appointment_id>/delete/', views.delete_appointment, name='delete_appointment'),
 ]
