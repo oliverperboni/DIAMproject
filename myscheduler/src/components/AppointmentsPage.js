@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './appointments.css'; // Importe o arquivo CSS
+import ServiceAppointments from './ServiceAppointments';
 
 const AppointmentsPage = ({ user }) => {
   const [appointments, setAppointments] = useState([]);
@@ -34,6 +35,7 @@ const AppointmentsPage = ({ user }) => {
           </li>
         ))}
       </ul>
+      <ServiceAppointments clientId={user} serviceId={user} />
     </div>
   );
 };
